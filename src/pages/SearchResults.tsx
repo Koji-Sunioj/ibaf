@@ -5,7 +5,7 @@ import Card from "react-bootstrap/Card";
 
 const SearchResults = () => {
   const [photos, setPhotos] = useState<null | []>(null);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const queryParams = {
     query: searchParams.get("query") || null,
