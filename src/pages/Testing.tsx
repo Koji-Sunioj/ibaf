@@ -23,7 +23,7 @@ const Testing = () => {
                 file path: {test.file.replace("/188imagesjpeg/", "")}
               </strong>
             </p>
-            <img src={test.file} />
+            <img src={test.file} alt={test.file} />
           </div>
         ))}
     </>
