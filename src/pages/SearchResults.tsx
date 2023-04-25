@@ -43,7 +43,7 @@ const SearchResults = () => {
       {photos !== null &&
         photos.map((photo: MockFile) => (
           <Card className="mb-3">
-            <Card.Img variant="bottom" src={photo.file} />
+            <Card.Img variant="bottom" src={photo.file} alt={photo.file} />
             <Card.Body>
               <Card.Title>{photo.photoId}</Card.Title>
               <Card.Text className="mb-1">{photo.caption}</Card.Text>
