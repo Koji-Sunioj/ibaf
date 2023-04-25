@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 
@@ -5,6 +7,18 @@ import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const navigate = useNavigate();
+
+  const collections = [
+    "Couvent St. Etienne",
+    "Couvent St. Etienne / Charles Prickartz",
+    "Couvent St. Etienne /  Sainte-Anne",
+    "Couvent St. Etienne / Jesuit",
+    "Couvent St. Etienne / The Sainte-Anne Collection ",
+    "Couvent St. Etienne /  Notre-Dame de France",
+    "Couvent St. Etienne / Paulus-Haus",
+    "Couvent St. Etienne / JOURDAIN COULEURS",
+    "Couvent St. Etienne / Bethléem coloriée",
+  ];
 
   const search = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -16,9 +30,7 @@ const HomePage = () => {
     } = event;
 
     let searchString = "";
-    if (
-      ["holy sepulchre", "damascus gate", "western wall"].includes(collection)
-    ) {
+    if (collections.includes(collection)) {
       searchString = `&collection=${collection}`;
     }
 
@@ -45,10 +57,11 @@ const HomePage = () => {
             <InputGroup.Text>Search: </InputGroup.Text>
             <Form.Control placeholder="title, caption..." name="query" />
             <Form.Select name="collection">
-              <option>select a collection</option>
-              <option value="holy sepulchre">Holy Sepulchre</option>
-              <option value="damascus gate">Damascus Gate</option>
-              <option value="western wall">Western Wall</option>
+              {collections.map((collection) => (
+                <option value={collection} key={collection}>
+                  {collection}
+                </option>
+              ))}
             </Form.Select>
           </InputGroup>
         </Form>

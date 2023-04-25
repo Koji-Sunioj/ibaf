@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
+
+import { MockFile } from "../utils/types";
 
 const SearchResults = () => {
   const [photos, setPhotos] = useState<null | []>(null);
@@ -16,31 +19,44 @@ const SearchResults = () => {
     photos === null &&
     (async () => {
       const { query, collection } = queryParams;
-      const request = await fetch("photos.json");
+      const request = await fetch("188.json");
       const data = await request.json();
-      let filtered = data.filter(
-        (photo: any) =>
-          photo.title.includes(query) || photo.caption.includes(query)
+      let filtered = data.filter((photo: MockFile) =>
+        photo.caption.includes(query!)
       );
       if (collection !== null) {
         filtered = filtered.filter(
-          (photo: any) => photo.collection === collection
+          (photo: MockFile) => photo.collection === collection
         );
       }
       setPhotos(filtered);
     })();
 
-  console.log(photos);
   return (
     <>
-      <h2 className="mt-3 mb-3">Search Results</h2>
+      <h2 className="mt-3 mb-3">
+        {photos !== null &&
+          (photos.length === 0
+            ? "No photos match this query"
+            : "Search results")}
+      </h2>
       {photos !== null &&
-        photos.map((photo: any) => (
-          <Card style={{ width: "18rem" }} className="mb-3">
-            <Card.Img variant="top" src={photo.url} />
+        photos.map((photo: MockFile) => (
+          <Card className="mb-3">
+            <Card.Img variant="bottom" src={photo.file} />
             <Card.Body>
-              <Card.Title>{photo.title}</Card.Title>
+              <Card.Title>{photo.photoId}</Card.Title>
               <Card.Text className="mb-1">{photo.caption}</Card.Text>
+              <Card.Text className="mb-1">
+                {photo.tags.map((tag: string) => (
+                  <Button
+                    key={photo.photoId + tag}
+                    style={{ margin: "3px 3px 3px 0px" }}
+                  >
+                    {tag}
+                  </Button>
+                ))}
+              </Card.Text>
               <Card.Text className="text-muted mb-1">
                 date: {photo.date}
               </Card.Text>
