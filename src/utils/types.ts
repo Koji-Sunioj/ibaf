@@ -6,3 +6,10 @@ export type MockFile = {
   photoId: string;
   tags: string[];
 };
+
+export type QueryParams = {
+  query: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  collection: string | null;
+};

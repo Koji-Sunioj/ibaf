@@ -1,21 +1,17 @@
-
-
-.input-group {
+/* .input-group {
   width: 70% !important;
-}
+} */
 
-form {
+/* form {
   display: flex;
   justify-content: center;
-
 }
 
 .form-control {
   width: 40% !important;
-}
-
+} */
 
 body {
   overflow-y: scroll; /* Show vertical scrollbar */
-
 }
+
