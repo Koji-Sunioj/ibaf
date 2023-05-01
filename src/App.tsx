@@ -3,6 +3,7 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import HomePage from "./pages/HomePage";
 import Testing from "./pages/Testing";
+import PhotoPage from "./pages/PhotoPage";
 import SearchResults from "./pages/SearchResults";
 
 import Container from "react-bootstrap/Container";
@@ -16,6 +17,7 @@ function App() {
           <Route path="/testing" element={<Testing />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/results" element={<SearchResults />} />
+          <Route path="/photo/:photoId" element={<PhotoPage />} />
         </Routes>
       </Container>
     </BrowserRouter>

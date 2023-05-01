@@ -12,6 +12,7 @@
 } */
 
 body {
-  overflow-y: scroll; /* Show vertical scrollbar */
+  overflow-x: scroll;
+  overflow-y: scroll;
 }
 

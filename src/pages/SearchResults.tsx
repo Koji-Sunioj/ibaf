@@ -4,31 +4,45 @@ import { useSearchParams } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 
-import { MockFile, QueryParams } from "../utils/types";
+import { MockFile, QueryParams, SearchParams } from "../utils/types";
 
 const SearchResults = () => {
   const [searchString, setSearchString] = useState("");
+  const [loading, setLoading] = useState(false);
   const [photos, setPhotos] = useState<null | []>(null);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const queryParams = {
     query: searchParams.get("query") || null,
+    type: searchParams.get("type") || null,
     collection: searchParams.get("collection") || null,
-    startDate: searchParams.get("start-date") || null,
-    endDate: searchParams.get("end-date") || null,
+    startDate: searchParams.get("startDate") || null,
+    endDate: searchParams.get("endDate") || null,
   };
 
   queryParams.query !== null &&
     photos === null &&
+    !loading &&
     (async () => {
-      const { query, collection, startDate, endDate } = queryParams;
+      setLoading(true);
+      const { query, collection, startDate, endDate, type } = queryParams;
       const request = await fetch("188.json");
       const data = await request.json();
-      let filtered = data.filter(
-        (photo: MockFile) =>
-          photo.caption.includes(query!) ||
-          photo.tags.includes(query?.toLowerCase()!)
-      );
+
+      let filtered;
+
+      if (type === "caption") {
+        filtered = data.filter((photo: MockFile) =>
+          photo.caption.toLowerCase().includes(query!.toLowerCase())
+        );
+      } else if (type === "tags") {
+        const tagsArr = query?.split(",");
+        console.log(tagsArr);
+        filtered = data.filter((photo: MockFile) =>
+          tagsArr?.every((tag: string) => photo.tags.includes(tag))
+        );
+      }
+
       if (collection !== null) {
         filtered = filtered.filter(
           (photo: MockFile) => photo.collection === collection
@@ -40,6 +54,7 @@ const SearchResults = () => {
         );
       }
       setPhotos(filtered);
+      setLoading(false);
       const searchAccum: string[] = [];
       Object.keys(queryParams).forEach((key) => {
         const value = queryParams[key as keyof QueryParams];
@@ -64,6 +79,7 @@ const SearchResults = () => {
             ? "No photos match this query"
             : `Search results for ${searchString}`)}
       </h4>
+      {loading && <h4 className="mt-3 mb-3">Loading results</h4>}
       {photos !== null &&
         photos.map((photo: MockFile) => (
           <Card className="mb-3">
@@ -74,16 +90,41 @@ const SearchResults = () => {
               <Card.Text className="mb-1">
                 {photo.tags.map((tag: string) => (
                   <Button
-                    key={photo.photoId + tag}
+                    key={photo.photoId + tag + String(Math.random())}
                     style={{ margin: "3px 3px 3px 0px" }}
+                    onClick={() => {
+                      const queryCopy = { ...queryParams };
+                      Object.keys(queryCopy).forEach((key) => {
+                        const value = queryCopy[key as keyof QueryParams];
+                        if (value === null) {
+                          delete queryCopy[key as keyof QueryParams];
+                        }
+                      });
+
+                      if (queryCopy.type === "tags") {
+                        const existingTags = queryCopy.query!.split(",");
+                        if (!existingTags.includes(tag)) {
+                          queryCopy.query += `,${tag}`;
+                        }
+                      } else {
+                        queryCopy.query = tag;
+                        queryCopy.type = "tags";
+                      }
+                      const withOutNulls = queryCopy as SearchParams;
+                      setPhotos(null);
+                      setSearchParams(withOutNulls);
+                    }}
                   >
                     {tag}
                   </Button>
                 ))}
               </Card.Text>
-              <Card.Text className="text-muted mb-1">
-                date: {photo.date}
-              </Card.Text>
+              {photo.date !== null && (
+                <Card.Text className="text-muted mb-1">
+                  date: {photo.date.substring(0, 4)}
+                </Card.Text>
+              )}
+
               <Card.Text className="text-muted  mb-1">
                 collection: {photo.collection}
               </Card.Text>

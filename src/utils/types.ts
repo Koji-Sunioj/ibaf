@@ -12,4 +12,13 @@ export type QueryParams = {
   startDate: string | null;
   endDate: string | null;
   collection: string | null;
+  type: string | null;
+};
+
+export type SearchParams = {
+  query: string;
+  startDate: string;
+  endDate: string;
+  collection: string;
+  type: string;
 };

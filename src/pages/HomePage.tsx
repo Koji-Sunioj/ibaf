@@ -7,24 +7,14 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { collections, tags } from "../utils/searchLists";
+
 const HomePage = () => {
+  const [searchType, setSearchType] = useState("caption");
   const [hideRange, setHideRange] = useState(true);
   const [startDate, setStartDate] = useState("1890");
   const [endDate, setEndDate] = useState("1938");
   const navigate = useNavigate();
-
-  const collections = [
-    "All collections",
-    "Couvent St. Etienne",
-    "Couvent St. Etienne / Charles Prickartz",
-    "Couvent St. Etienne /  Sainte-Anne",
-    "Couvent St. Etienne / Jesuit",
-    "Couvent St. Etienne / The Sainte-Anne Collection ",
-    "Couvent St. Etienne /  Notre-Dame de France",
-    "Couvent St. Etienne / Paulus-Haus",
-    "Couvent St. Etienne / JOURDAIN COULEURS",
-    "Couvent St. Etienne / Bethléem coloriée",
-  ];
 
   const search = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -47,13 +37,13 @@ const HomePage = () => {
     }
 
     if (!hideRange) {
-      dateString = `&start-date=${startDate}&end-date=${endDate}`;
+      dateString = `&startDate=${startDate}&endDate=${endDate}`;
     }
 
     if (query.length > 0) {
       const params = {
         pathname: "/results",
-        search: `query=${query}${searchString}${dateString}`,
+        search: `query=${query}&type=${searchType}${searchString}${dateString}`,
       };
       navigate(params);
     }
@@ -75,7 +65,20 @@ const HomePage = () => {
                 <Button variant="primary" type="submit">
                   Search
                 </Button>
-                <Form.Control placeholder="title, caption..." name="query" />
+                <Form.Control
+                  placeholder={`via ${searchType}`}
+                  name="query"
+                  list="tags"
+                />
+                {searchType === "tags" && (
+                  <>
+                    <datalist id="tags">
+                      {tags.map((tag) => (
+                        <option key={tag} value={tag} />
+                      ))}
+                    </datalist>
+                  </>
+                )}
                 <Form.Select name="collection">
                   {collections.map((collection) => (
                     <option value={collection} key={collection}>
@@ -88,10 +91,21 @@ const HomePage = () => {
           </Row>
           <Row style={{ marginBottom: "10px" }}>
             <Col lg={{ span: 8, offset: 2 }}>
+              <h3>Options</h3>
               <Form.Check
-                type={"checkbox"}
+                type={"switch"}
+                id={`search-type`}
+                label={`${searchType} search`}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  e.currentTarget.checked
+                    ? setSearchType("tags")
+                    : setSearchType("caption");
+                }}
+              />
+              <Form.Check
+                type={"switch"}
                 id={`date-filter`}
-                label={"Date Filter"}
+                label={"date Filter"}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setHideRange(!e.currentTarget.checked);
                 }}
