@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
@@ -85,7 +85,9 @@ const SearchResults = () => {
           <Card className="mb-3">
             <Card.Img variant="bottom" src={photo.file} alt={photo.file} />
             <Card.Body>
-              <Card.Title>{photo.photoId}</Card.Title>
+              <Card.Title>
+                <Link to={`/photo/${photo.photoId}`}>{photo.photoId}</Link>
+              </Card.Title>
               <Card.Text className="mb-1">{photo.caption}</Card.Text>
               <Card.Text className="mb-1">
                 {photo.tags.map((tag: string) => (
