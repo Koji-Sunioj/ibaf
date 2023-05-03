@@ -4,13 +4,37 @@ import { useSearchParams, Link } from "react-router-dom";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 
+import SearchBar from "../components/SearchBar";
+
+import { collections } from "../utils/searchLists";
+
+import { useNavigate } from "react-router-dom";
+
 import { MockFile, QueryParams, SearchParams } from "../utils/types";
 
 const SearchResults = () => {
+  const navigate = useNavigate();
+
   const [searchString, setSearchString] = useState("");
   const [loading, setLoading] = useState(false);
   const [photos, setPhotos] = useState<null | []>(null);
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const shouldHide =
+    searchParams.get("startDate") === null &&
+    searchParams.get("endDate") === null;
+
+  const [currentTagGroup, setCurrentTagGroup] = useState(
+    searchParams.get("collection") || "All collections"
+  );
+  const [searchType, setSearchType] = useState(
+    searchParams.get("type") || "caption"
+  );
+  const [hideRange, setHideRange] = useState(shouldHide);
+  const [startDate, setStartDate] = useState(
+    searchParams.get("startDate") || "1890"
+  );
+  const [endDate, setEndDate] = useState(searchParams.get("endDate") || "1938");
 
   const queryParams = {
     query: searchParams.get("query") || null,
@@ -71,15 +95,69 @@ const SearchResults = () => {
       setSearchString(searchAccum.join(", "));
     })();
 
+  const search = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const {
+      currentTarget: {
+        query: { value: query },
+        collection: { value: collection },
+        startDate: { value: startDate },
+        endDate: { value: endDate },
+      },
+    } = event;
+
+    let searchString = "";
+    let dateString = "";
+    if (
+      collections.includes(collection) &&
+      !collection.includes("All collections")
+    ) {
+      searchString = `&collection=${collection}`;
+    }
+
+    if (!hideRange) {
+      dateString = `&startDate=${startDate}&endDate=${endDate}`;
+    }
+
+    if (query.length > 0) {
+      const params = {
+        pathname: "/results",
+        search: `query=${query}&type=${searchType}${searchString}${dateString}`,
+      };
+      navigate(params);
+      setPhotos(null);
+    }
+  };
+
+  const fetched = photos !== null && photos.length === 0;
+
   return (
     <>
-      <h4 className="mt-3 mb-3">
-        {photos !== null &&
-          (photos.length === 0
-            ? "No photos match this query"
-            : `Search results for ${searchString}`)}
-      </h4>
-      {loading && <h4 className="mt-3 mb-3">Loading results</h4>}
+      <h6 className="mt-3 mb-3">
+        {loading
+          ? "Loading results"
+          : fetched
+          ? "No photos match this query"
+          : `Search results for ${searchString}`}
+      </h6>
+      <div>
+        <SearchBar
+          origin={"results"}
+          search={search}
+          endDate={endDate}
+          startDate={startDate}
+          searchType={searchType}
+          hideRange={hideRange}
+          currentTagGroup={currentTagGroup}
+          query={searchParams.get("query") || ""}
+          setEndDate={setEndDate}
+          setStartDate={setStartDate}
+          setCurrentTagGroup={setCurrentTagGroup}
+          setSearchType={setSearchType}
+          setHideRange={setHideRange}
+        />
+      </div>
+
       {photos !== null &&
         photos.map((photo: MockFile) => (
           <Card className="mb-3">

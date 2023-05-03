@@ -22,3 +22,7 @@ export type SearchParams = {
   collection: string;
   type: string;
 };
+
+export type RefinedTags = {
+  [key: string]: string[];
+};
