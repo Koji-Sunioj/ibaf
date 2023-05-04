@@ -50,6 +50,7 @@ const SearchBar = ({
             <Form.Control
               placeholder={`via ${searchType}`}
               name="query"
+              id="query-input"
               list="tags"
               defaultValue={query}
             />

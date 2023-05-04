@@ -131,6 +131,8 @@ const SearchResults = () => {
 
   const fetched = photos !== null && photos.length === 0;
 
+  console.log(searchParams.get("query"));
+
   return (
     <>
       <h6 className="mt-3 mb-3">
@@ -181,16 +183,35 @@ const SearchResults = () => {
                         }
                       });
 
-                      if (queryCopy.type === "tags") {
-                        const existingTags = queryCopy.query!.split(",");
-                        if (!existingTags.includes(tag)) {
-                          queryCopy.query += `,${tag}`;
-                        }
-                      } else {
-                        queryCopy.query = tag;
-                        queryCopy.type = "tags";
-                      }
+                      // console.log(queryCopy)
+
+                      // const params = {
+                      //   pathname: "/results",
+                      //   search: `query=${tag}&type=tags`,
+                      // };
+                      // navigate(params);
+                      // setPhotos(null);
+                      // setSearchType("tags");
+
+                      // if (queryCopy.type === "tags") {
+                      //   const existingTags = queryCopy.query!.split(",");
+                      //   if (!existingTags.includes(tag)) {
+                      //     queryCopy.query += `,${tag}`;
+                      //   }
+                      // } else {
+                      //   queryCopy.query = tag;
+                      //   queryCopy.type = "tags";
+                      // }
+                      queryCopy.query = tag;
+                      queryCopy.type = "tags";
                       const withOutNulls = queryCopy as SearchParams;
+                      (
+                        document.getElementById(
+                          "query-input"
+                        )! as HTMLInputElement
+                      ).value = tag;
+                      setSearchString(tag);
+                      setSearchType("tags");
                       setPhotos(null);
                       setSearchParams(withOutNulls);
                     }}
