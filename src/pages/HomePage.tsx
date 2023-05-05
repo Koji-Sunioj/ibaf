@@ -49,7 +49,7 @@ const HomePage = () => {
   return (
     <>
       <h1 className="mt-3" style={{ textAlign: "center" }}>
-        Welcome to the EBAF Collection
+        Welcome to the Collection
       </h1>
       <p style={{ textAlign: "center" }}>
         We have more than 31,000 photos as of December 2022
