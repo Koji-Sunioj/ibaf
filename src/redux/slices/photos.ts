@@ -1,16 +1,46 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-import { TPhotosState } from "../../utils/types";
+import { TPhotosState, TFilterState, MockFile } from "../../utils/types";
 
-export const fetchPhotos = createAsyncThunk("fetch-photos", async () => {
-  const request = await fetch("188.json");
-  const response = await request.json();
-  if (!request.ok) {
-    const { message } = response;
-    throw new Error(message);
+export const fetchPhotos = createAsyncThunk(
+  "fetch-photos",
+  async (filter: TFilterState) => {
+    const request = await fetch("188.json");
+    const response = await request.json();
+    if (!request.ok) {
+      const { message } = response;
+      throw new Error(message);
+    }
+    let filtered;
+    const { collection, query, startDate, endDate, hideRange, type } = filter;
+
+    if (type === "caption") {
+      filtered = response.filter((photo: MockFile) =>
+        photo.caption.toLowerCase().includes(query!.toLowerCase())
+      );
+    } else if (type === "tags") {
+      const tagsArr = query?.split(",");
+      filtered = response.filter((photo: MockFile) =>
+        tagsArr?.every((tag: string) => photo.tags.includes(tag))
+      );
+    }
+
+    console.log(filtered);
+
+    if (!collection.includes("All collections"))
+      filtered = filtered.filter(
+        (photo: MockFile) => photo.collection === collection
+      );
+
+    if (!hideRange) {
+      filtered = filtered.filter(
+        (photo: MockFile) => photo.date > startDate && photo.date < endDate
+      );
+    }
+
+    return filtered;
   }
-  return response;
-});
+);
 
 export const initialPhotosState: TPhotosState = {
   data: null,

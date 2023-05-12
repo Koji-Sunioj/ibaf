@@ -9,6 +9,7 @@ export const initialFilterState: TFilterState = {
   endDate: "1938",
   hideRange: true,
   collection: "All collections",
+  directRefer: true,
 };
 
 export const filterSlice = createSlice({

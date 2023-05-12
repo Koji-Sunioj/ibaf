@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 
 import Card from "react-bootstrap/Card";
@@ -21,49 +21,40 @@ import { setFilter } from "../redux/slices/filter";
 import { fetchPhotos } from "../redux/slices/photos";
 
 const SearchResults = () => {
+  const [searchString, setSearchString] = useState("");
   const dispatch = useDispatch<any>();
-  const navigate = useNavigate();
   const { data, loading, error, message } = useSelector(
     (state: TAppState) => state.photos
   );
-
-  const { collection, type, query } = useSelector(
-    (state: TAppState) => state.filter
-  );
+  const { collection, type, query, startDate, endDate, directRefer } =
+    useSelector((state: TAppState) => state.filter);
   const filter = useSelector((state: TAppState) => state.filter);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const queryParams: Omit<TFilterState, "hideRange"> = {
+  const queryParams: Omit<TFilterState, "hideRange" | "directRefer"> = {
     query: searchParams.get("query") || query,
     type: searchParams.get("type") || type,
     collection: searchParams.get("collection") || collection,
-    startDate: searchParams.get("startDate") || "",
-    endDate: searchParams.get("endDate") || "",
+    startDate: searchParams.get("startDate") || startDate,
+    endDate: searchParams.get("endDate") || endDate,
   };
-
-  // const isSameAsReducer = Object.keys(queryParams).some((key) => {
-  //   const filterValue = filter[key as keyof TFilterState];
-  //   const paramValue =
-  //     queryParams[key as keyof Omit<TFilterState, "hideRange">];
-  //   return filterValue !== paramValue;
-  // });
 
   const constructParams = () => {
     const queryCopy = {};
-    if (
-      queryParams.endDate.length !== 0 &&
-      queryParams.startDate.length !== 0
-    ) {
+    Object.assign(queryCopy, {
+      collection: queryParams.collection,
+      type: queryParams.type,
+    });
+    const hasDates =
+      searchParams.get("startDate") !== null &&
+      searchParams.get("endDate") !== null;
+    if (hasDates) {
       Object.assign(queryCopy, {
         startDate: queryParams.startDate,
         endDate: queryParams.endDate,
       });
     }
-    Object.assign(queryCopy, {
-      collection: queryParams.collection,
-      type: queryParams.type,
-    });
     if (queryParams.query.length > 0) {
       Object.assign(queryCopy, {
         query: queryParams.query,
@@ -72,83 +63,19 @@ const SearchResults = () => {
     return queryCopy;
   };
 
-  const compareParams = (newParams: any) => {
-    const isNotSame = Object.keys(newParams).some((key) => {
-      const queryValue = newParams[key];
-      const filterVale = filter[key as keyof TFilterState];
-      return queryValue !== filterVale;
-    });
-
-    return isNotSame;
-  };
-
   useEffect(() => {
     const queryCopy = constructParams();
-    setSearchParams(queryCopy);
-    const isNotSame = compareParams(queryCopy);
-
-    if (isNotSame) {
-      if (queryCopy.hasOwnProperty("startDate")) {
-        Object.assign(queryCopy, { hideRange: false });
-      }
-      dispatch(setFilter(queryCopy));
+    setSearchString(JSON.stringify(queryCopy));
+    if (directRefer) {
+      setSearchParams(queryCopy);
+      const hasDates = queryCopy.hasOwnProperty("startDate");
+      hasDates && Object.assign(queryCopy, { hideRange: false });
+      dispatch(setFilter({ ...queryCopy, directRefer: false }));
     } else {
-      dispatch(fetchPhotos());
+      const shouldFetch = data === null && !loading && query.length > 0;
+      shouldFetch && dispatch(fetchPhotos(filter));
     }
   }, [filter]);
-
-  // console.log(window.URL.toString());
-
-  // queryParams.query !== null &&
-  //   data === null &&
-  //   !loading &&
-  //   (async () => {
-  //     setLoading(true);
-  //     const { query, collection, startDate, endDate, type } = queryParams;
-  //     const request = await fetch("188.json");
-  //     const data = await request.json();
-
-  //     let filtered;
-
-  //     if (type === "caption") {
-  //       filtered = data.filter((photo: MockFile) =>
-  //         photo.caption.toLowerCase().includes(query!.toLowerCase())
-  //       );
-  //     } else if (type === "tags") {
-  //       const tagsArr = query?.split(",");
-  //       console.log(tagsArr);
-  //       filtered = data.filter((photo: MockFile) =>
-  //         tagsArr?.every((tag: string) => photo.tags.includes(tag))
-  //       );
-  //     }
-
-  //     if (collection !== null) {
-  //       filtered = filtered.filter(
-  //         (photo: MockFile) => photo.collection === collection
-  //       );
-  //     }
-  //     if (startDate !== null && endDate !== null) {
-  //       filtered = filtered.filter(
-  //         (photo: MockFile) => photo.date > startDate && photo.date < endDate
-  //       );
-  //     }
-  //     setPhotos(filtered);
-  //     setLoading(false);
-  //     const searchAccum: string[] = [];
-  //     Object.keys(queryParams).forEach((key) => {
-  //       const value = queryParams[key as keyof QueryParams];
-  //       if (value !== null) {
-  //         if (key.includes("Date")) {
-  //           const splitted = key.split(/(?=[A-Z])/);
-  //           const realKey = `${splitted[0]} ${splitted[1].toLowerCase()}`;
-  //           searchAccum.push(`${realKey}=${value}`);
-  //         } else {
-  //           searchAccum.push(`${key}=${value}`);
-  //         }
-  //       }
-  //     });
-  //     // setSearchString(searchAccum.join(", "));
-  //   })();
 
   const search = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -185,18 +112,12 @@ const SearchResults = () => {
   };
 
   //const fetched = photos !== null && photos.length === 0;
-
   console.log(data);
+  console.log("rendered");
 
   return (
     <>
-      <h6 className="mt-3 mb-3">
-        {/* {loading
-          ? "Loading results"
-          : fetched
-          ? "No photos match this query"
-          : `Search results for ${searchString}`} */}
-      </h6>
+      <h6 className="mt-3 mb-3"> {searchString}</h6>
       <div>
         <SearchBar origin={"results"} search={search} />
       </div>

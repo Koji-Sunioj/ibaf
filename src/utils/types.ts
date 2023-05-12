@@ -5,6 +5,7 @@ export type TFilterState = {
   endDate: string;
   collection: string;
   hideRange: boolean;
+  directRefer: boolean;
 };
 
 export type TAppState = {

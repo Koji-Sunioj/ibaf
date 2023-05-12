@@ -94,7 +94,7 @@ const SearchBar = ({ origin, search }: TSearchBarProps) => {
       </Row>
       <Row>
         <Col lg={display} style={{ display: hideRange ? "none" : "block" }}>
-          <Form.Label>Greater than {endDate}</Form.Label>
+          <Form.Label>Less than {endDate}</Form.Label>
           <Form.Range
             name="endDate"
             min="1890"
@@ -111,7 +111,7 @@ const SearchBar = ({ origin, search }: TSearchBarProps) => {
       </Row>
       <Row>
         <Col lg={display} style={{ display: hideRange ? "none" : "block" }}>
-          <Form.Label>Less than {startDate}</Form.Label>
+          <Form.Label>Greater than {startDate}</Form.Label>
           <Form.Range
             name="startDate"
             min="1890"

@@ -6,8 +6,10 @@ import { setFilter } from "../redux/slices/filter";
 import { TAppState } from "../utils/types";
 
 import SearchBar from "../components/SearchBar";
+import { resetPhotos } from "../redux/slices/photos";
 
 const HomePage = () => {
+  const { data } = useSelector((state: TAppState) => state.photos);
   const { type, query, collection, hideRange, endDate, startDate } =
     useSelector((state: TAppState) => state.filter);
   const dispatch = useDispatch();
@@ -22,14 +24,14 @@ const HomePage = () => {
     } = event;
 
     if (query.length > 0) {
-      dispatch(setFilter({ query: query }));
-      const searchString = `&collection=${collection}`;
+      dispatch(setFilter({ query: query, directRefer: false }));
+      data !== null && dispatch(resetPhotos());
       const dateString = !hideRange
         ? `&startDate=${startDate}&endDate=${endDate}`
         : "";
       const params = {
         pathname: "/results",
-        search: `query=${query}&type=${type}${searchString}${dateString}`,
+        search: `?collection=${collection}&type=${type}&query=${query}${dateString}`,
       };
       navigate(params);
     }
