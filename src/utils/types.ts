@@ -1,3 +1,29 @@
+export type TFilterState = {
+  type: string;
+  query: string;
+  startDate: string;
+  endDate: string;
+  collection: string;
+  hideRange: boolean;
+};
+
+export type TAppState = {
+  filter: TFilterState;
+  photos: TPhotosState;
+};
+
+export type TSearchBarProps = {
+  origin: string;
+  search: (event: React.FormEvent<HTMLFormElement>) => void;
+};
+
+export type TPhotosState = {
+  data: null | MockFile[];
+  loading: boolean;
+  error: boolean;
+  message: null | string;
+};
+
 export type MockFile = {
   caption: string;
   collection: string;

@@ -4,40 +4,28 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
 
+import { useSelector, useDispatch } from "react-redux";
+import { TAppState, TFilterState, TSearchBarProps } from "../utils/types";
 import { collections, refinedTags } from "../utils/searchLists";
 
-type TSearchBarProps = {
-  origin: string;
-  search: (event: React.FormEvent<HTMLFormElement>) => void;
-  endDate: string;
-  startDate: string;
-  searchType: string;
-  hideRange: boolean;
-  currentTagGroup: string;
-  query?: string;
-  setEndDate: React.Dispatch<React.SetStateAction<string>>;
-  setStartDate: React.Dispatch<React.SetStateAction<string>>;
-  setSearchType: React.Dispatch<React.SetStateAction<string>>;
-  setHideRange: React.Dispatch<React.SetStateAction<boolean>>;
-  setCurrentTagGroup: React.Dispatch<React.SetStateAction<string>>;
-};
+import { setFilter } from "../redux/slices/filter";
 
-const SearchBar = ({
-  origin,
-  search,
-  endDate,
-  startDate,
-  searchType,
-  hideRange,
-  currentTagGroup,
-  query = "",
-  setEndDate,
-  setStartDate,
-  setSearchType,
-  setHideRange,
-  setCurrentTagGroup,
-}: TSearchBarProps) => {
+const SearchBar = ({ origin, search }: TSearchBarProps) => {
+  const dispatch = useDispatch();
   const display = origin === "home" ? { span: 8, offset: 2 } : { span: 8 };
+  const { type, query, collection, hideRange, endDate, startDate } =
+    useSelector((state: TAppState) => state.filter);
+
+  const mutateParams = (newParams: { [index: string]: string | boolean }) => {
+    dispatch(setFilter(newParams));
+  };
+
+  const changeCollection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const {
+      currentTarget: { value },
+    } = e;
+    dispatch(setFilter({ collection: value }));
+  };
 
   return (
     <Form onSubmit={search}>
@@ -48,16 +36,16 @@ const SearchBar = ({
               Search
             </Button>
             <Form.Control
-              placeholder={`via ${searchType}`}
+              placeholder={`via ${type}`}
               name="query"
               id="query-input"
               list="tags"
               defaultValue={query}
             />
-            {searchType === "tags" && (
+            {type === "tags" && (
               <>
                 <datalist id="tags">
-                  {refinedTags[currentTagGroup as keyof typeof refinedTags].map(
+                  {refinedTags[collection as keyof typeof refinedTags].map(
                     (tag) => (
                       <option key={tag} value={tag} />
                     )
@@ -67,10 +55,8 @@ const SearchBar = ({
             )}
             <Form.Select
               name="collection"
-              value={currentTagGroup}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                setCurrentTagGroup(e.currentTarget.value);
-              }}
+              value={collection}
+              onChange={changeCollection}
             >
               {collections.map((collection) => (
                 <option value={collection} key={collection}>
@@ -85,14 +71,14 @@ const SearchBar = ({
         <Col lg={display}>
           <h3>Options</h3>
           <Form.Check
-            checked={searchType !== "caption"}
+            checked={type !== "caption"}
             type={"switch"}
             id={`search-type`}
-            label={`${searchType} search`}
+            label={`${type} search`}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               e.currentTarget.checked
-                ? setSearchType("tags")
-                : setSearchType("caption");
+                ? mutateParams({ type: "tags" })
+                : mutateParams({ type: "caption" });
             }}
           />
           <Form.Check
@@ -101,7 +87,7 @@ const SearchBar = ({
             id={`date-filter`}
             label={"date filter"}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setHideRange(!e.currentTarget.checked);
+              mutateParams({ hideRange: !e.currentTarget.checked });
             }}
           />
         </Col>
@@ -115,9 +101,9 @@ const SearchBar = ({
             max="1938"
             value={endDate}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              const endRage = e.currentTarget.value;
-              if (Number(endRage) > Number(startDate)) {
-                setEndDate(endRage);
+              const endRange = e.currentTarget.value;
+              if (Number(endRange) > Number(startDate)) {
+                mutateParams({ endDate: endRange });
               }
             }}
           />
@@ -134,7 +120,7 @@ const SearchBar = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const startRange = e.currentTarget.value;
               if (Number(startRange) < Number(endDate)) {
-                setStartDate(startRange);
+                mutateParams({ startDate: startRange });
               }
             }}
           />
