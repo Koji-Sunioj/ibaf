@@ -6,14 +6,8 @@ import Button from "react-bootstrap/Button";
 
 import SearchBar from "../components/SearchBar";
 import { refinedTags } from "../utils/searchLists";
-import { useNavigate } from "react-router-dom";
-import {
-  MockFile,
-  QueryParams,
-  SearchParams,
-  TAppState,
-  TFilterState,
-} from "../utils/types";
+
+import { MockFile, TAppState, TFilterState } from "../utils/types";
 import { useSelector, useDispatch } from "react-redux";
 
 import { setFilter } from "../redux/slices/filter";
@@ -21,11 +15,9 @@ import { setFilter } from "../redux/slices/filter";
 import { fetchPhotos, resetPhotos } from "../redux/slices/photos";
 
 const SearchResults = () => {
-  const [searchString, setSearchString] = useState("");
+  // const [, setSearchString] = useState("");
   const dispatch = useDispatch<any>();
-  const { data, loading, error, message } = useSelector(
-    (state: TAppState) => state.photos
-  );
+  const { data, loading } = useSelector((state: TAppState) => state.photos);
   const {
     collection,
     type,
@@ -72,7 +64,7 @@ const SearchResults = () => {
 
   useEffect(() => {
     const queryCopy = constructParams();
-    setSearchString(JSON.stringify(queryCopy));
+    // setSearchString(JSON.stringify(queryCopy));
     if (directRefer) {
       setSearchParams(queryCopy);
       const hasDates = queryCopy.hasOwnProperty("startDate");
@@ -84,7 +76,7 @@ const SearchResults = () => {
       shouldFetch && dispatch(fetchPhotos(filter));
       // dispatch(fetchPhotos(filter));
     }
-  }, [filter]);
+  });
 
   console.log(filter);
 

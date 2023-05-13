@@ -3,9 +3,9 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
+
 import { useSelector, useDispatch } from "react-redux";
-import { TAppState, TFilterState, TSearchBarProps } from "../utils/types";
+import { TAppState, TSearchBarProps } from "../utils/types";
 import { collections, refinedTags } from "../utils/searchLists";
 
 import { setFilter } from "../redux/slices/filter";
