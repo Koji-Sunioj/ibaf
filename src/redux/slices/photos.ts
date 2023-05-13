@@ -15,17 +15,21 @@ export const fetchPhotos = createAsyncThunk(
     const { collection, query, startDate, endDate, hideRange, type } = filter;
 
     if (type === "caption") {
-      filtered = response.filter((photo: MockFile) =>
-        photo.caption.toLowerCase().includes(query!.toLowerCase())
-      );
+      filtered =
+        query.length > 0
+          ? response.filter((photo: MockFile) =>
+              photo.caption.toLowerCase().includes(query!.toLowerCase())
+            )
+          : response;
     } else if (type === "tags") {
-      const tagsArr = query?.split(",");
-      filtered = response.filter((photo: MockFile) =>
-        tagsArr?.every((tag: string) => photo.tags.includes(tag))
-      );
+      const tagsArr = query.split(",");
+      filtered =
+        query.length > 0
+          ? response.filter((photo: MockFile) =>
+              tagsArr?.every((tag: string) => photo.tags.includes(tag))
+            )
+          : response;
     }
-
-    console.log(filtered);
 
     if (!collection.includes("All collections"))
       filtered = filtered.filter(

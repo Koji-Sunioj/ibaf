@@ -4,7 +4,7 @@ import { TFilterState } from "../../utils/types";
 
 export const initialFilterState: TFilterState = {
   query: "",
-  type: "caption",
+  type: "tags",
   startDate: "1890",
   endDate: "1938",
   hideRange: true,

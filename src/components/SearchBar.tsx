@@ -3,14 +3,14 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
-
+import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { useSelector, useDispatch } from "react-redux";
 import { TAppState, TFilterState, TSearchBarProps } from "../utils/types";
 import { collections, refinedTags } from "../utils/searchLists";
 
 import { setFilter } from "../redux/slices/filter";
 
-const SearchBar = ({ origin, search }: TSearchBarProps) => {
+const SearchBar = ({ origin, search, removeTag }: TSearchBarProps) => {
   const dispatch = useDispatch();
   const display = origin === "home" ? { span: 8, offset: 2 } : { span: 8 };
   const { type, query, collection, hideRange, endDate, startDate } =
@@ -40,7 +40,7 @@ const SearchBar = ({ origin, search }: TSearchBarProps) => {
               name="query"
               id="query-input"
               list="tags"
-              defaultValue={query}
+              defaultValue={type === "tags" ? "" : query}
             />
             {type === "tags" && (
               <>
@@ -65,22 +65,49 @@ const SearchBar = ({ origin, search }: TSearchBarProps) => {
               ))}
             </Form.Select>
           </InputGroup>
+          {type === "tags" && query.length > 0 && (
+            <div className="mb-3">
+              {query.split(",").map((tag) => (
+                <Button
+                  size="sm"
+                  style={{ margin: "3px 3px 3px 0px" }}
+                  onClick={() => {
+                    removeTag(tag);
+                  }}
+                >
+                  {tag + " | X"}
+                </Button>
+              ))}
+            </div>
+          )}
         </Col>
       </Row>
       <Row style={{ marginBottom: "10px" }}>
         <Col lg={display}>
-          <h3>Options</h3>
-          <Form.Check
-            checked={type !== "caption"}
-            type={"switch"}
-            id={`search-type`}
-            label={`${type} search`}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              e.currentTarget.checked
-                ? mutateParams({ type: "tags" })
-                : mutateParams({ type: "caption" });
-            }}
-          />
+          <h3>Search by</h3>
+          <div key={`inline radio`} className="mb-3">
+            <Form.Check
+              label="tags"
+              name="searchRadio"
+              type={"radio"}
+              id={`inline-${"radio"}-1`}
+              checked={type === "tags"}
+              onChange={() => {
+                mutateParams({ type: "tags" });
+              }}
+            />
+            <Form.Check
+              label="caption"
+              name="searchRadio"
+              type={"radio"}
+              id={`inline-${"radio"}-2`}
+              checked={type === "caption"}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                mutateParams({ type: "caption" });
+              }}
+            />
+          </div>
+
           <Form.Check
             checked={!hideRange}
             type={"switch"}

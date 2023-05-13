@@ -37,6 +37,12 @@ const HomePage = () => {
     }
   };
 
+  const removeTag = (buttonTag: string) => {
+    const tagsArray = query.split(",");
+    const withThatTag = tagsArray.filter((tag) => tag !== buttonTag);
+    dispatch(setFilter({ query: withThatTag.join(","), type: "tags" }));
+  };
+
   return (
     <>
       <h1 className="mt-3" style={{ textAlign: "center" }}>
@@ -46,7 +52,7 @@ const HomePage = () => {
         We have more than 31,000 photos as of December 2022
       </p>
       <div>
-        <SearchBar origin={"home"} search={search} />
+        <SearchBar origin={"home"} search={search} removeTag={removeTag} />
       </div>
     </>
   );

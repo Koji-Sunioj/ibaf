@@ -5,8 +5,11 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 
 import { MockFile } from "../utils/types";
+import { useDispatch } from "react-redux";
+import { resetPhotos } from "../redux/slices/photos";
 
 const PhotoPage = () => {
+  const dispatch = useDispatch();
   const { photoId } = useParams();
   const navigate = useNavigate();
   const [pagePhoto, setpagePhoto] = useState<MockFile | null>(null);
@@ -54,13 +57,14 @@ const PhotoPage = () => {
             </Card.Text>
             {pagePhoto.tags.map((tag) => (
               <Button
+                size="sm"
                 style={{ margin: "3px 3px 3px 0px" }}
                 onClick={() => {
                   const params = {
                     pathname: "/results",
-                    search: `query=${tag}&type=tags`,
+                    search: `?collection=${pagePhoto.collection}&type=tags&query=${tag}`,
                   };
-
+                  dispatch(resetPhotos());
                   navigate(params);
                 }}
               >
