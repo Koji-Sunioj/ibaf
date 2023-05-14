@@ -162,7 +162,10 @@ const SearchResults = () => {
   };
 
   const selectedTags =
-    type === "tags" && query.length > 0 && data !== null
+    type === "tags" &&
+    query.length > 0 &&
+    data !== null &&
+    searchParams.get("collection") === collection
       ? concatenateTags(data)
       : refinedTags[collection as keyof typeof refinedTags];
 
