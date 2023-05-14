@@ -6,11 +6,16 @@ import InputGroup from "react-bootstrap/InputGroup";
 
 import { useSelector, useDispatch } from "react-redux";
 import { TAppState, TSearchBarProps } from "../utils/types";
-import { collections, refinedTags } from "../utils/searchLists";
+import { collections } from "../utils/searchLists";
 
 import { setFilter } from "../redux/slices/filter";
 
-const SearchBar = ({ origin, search, removeTag }: TSearchBarProps) => {
+const SearchBar = ({
+  origin,
+  search,
+  removeTag,
+  selectedTags,
+}: TSearchBarProps) => {
   const dispatch = useDispatch();
   const display = origin === "home" ? { span: 8, offset: 2 } : { span: 8 };
   const { type, query, collection, hideRange, endDate, startDate } =
@@ -45,11 +50,9 @@ const SearchBar = ({ origin, search, removeTag }: TSearchBarProps) => {
             {type === "tags" && (
               <>
                 <datalist id="tags">
-                  {refinedTags[collection as keyof typeof refinedTags].map(
-                    (tag) => (
-                      <option key={tag} value={tag} />
-                    )
-                  )}
+                  {selectedTags.map((tag) => (
+                    <option key={tag} value={tag} />
+                  ))}
                 </datalist>
               </>
             )}
@@ -94,6 +97,9 @@ const SearchBar = ({ origin, search, removeTag }: TSearchBarProps) => {
               checked={type === "tags"}
               onChange={() => {
                 mutateParams({ type: "tags" });
+                (
+                  document.getElementById("query-input") as HTMLInputElement
+                ).value = "";
               }}
             />
             <Form.Check
@@ -102,8 +108,11 @@ const SearchBar = ({ origin, search, removeTag }: TSearchBarProps) => {
               type={"radio"}
               id={`inline-${"radio"}-2`}
               checked={type === "caption"}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              onChange={() => {
                 mutateParams({ type: "caption" });
+                (
+                  document.getElementById("query-input") as HTMLInputElement
+                ).value = query;
               }}
             />
           </div>

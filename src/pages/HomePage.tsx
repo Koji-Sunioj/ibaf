@@ -5,6 +5,8 @@ import { setFilter } from "../redux/slices/filter";
 
 import { TAppState } from "../utils/types";
 
+import { refinedTags } from "../utils/searchLists";
+
 import SearchBar from "../components/SearchBar";
 import { resetPhotos } from "../redux/slices/photos";
 
@@ -43,6 +45,8 @@ const HomePage = () => {
     dispatch(setFilter({ query: withThatTag.join(","), type: "tags" }));
   };
 
+  const selectedTags = refinedTags[collection as keyof typeof refinedTags];
+
   return (
     <>
       <h1 className="mt-3" style={{ textAlign: "center" }}>
@@ -52,7 +56,12 @@ const HomePage = () => {
         We have more than 31,000 photos as of December 2022
       </p>
       <div>
-        <SearchBar origin={"home"} search={search} removeTag={removeTag} />
+        <SearchBar
+          origin={"home"}
+          search={search}
+          removeTag={removeTag}
+          selectedTags={selectedTags}
+        />
       </div>
     </>
   );

@@ -15,6 +15,7 @@ export type TAppState = {
 
 export type TSearchBarProps = {
   origin: string;
+  selectedTags: string[];
   search: (event: React.FormEvent<HTMLFormElement>) => void;
   removeTag: (buttonTag: string) => void;
 };

@@ -15,7 +15,6 @@ import { setFilter } from "../redux/slices/filter";
 import { fetchPhotos, resetPhotos } from "../redux/slices/photos";
 
 const SearchResults = () => {
-  // const [, setSearchString] = useState("");
   const dispatch = useDispatch<any>();
   const { data, loading } = useSelector((state: TAppState) => state.photos);
   const {
@@ -27,6 +26,7 @@ const SearchResults = () => {
     directRefer,
     hideRange,
   } = useSelector((state: TAppState) => state.filter);
+
   const filter = useSelector((state: TAppState) => state.filter);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -63,22 +63,17 @@ const SearchResults = () => {
   };
 
   useEffect(() => {
-    const queryCopy = constructParams();
-    // setSearchString(JSON.stringify(queryCopy));
     if (directRefer) {
+      const queryCopy = constructParams();
       setSearchParams(queryCopy);
       const hasDates = queryCopy.hasOwnProperty("startDate");
       hasDates && Object.assign(queryCopy, { hideRange: false });
       dispatch(setFilter({ ...queryCopy, directRefer: false }));
     } else {
-      console.log("fetching");
       const shouldFetch = data === null && !loading;
       shouldFetch && dispatch(fetchPhotos(filter));
-      // dispatch(fetchPhotos(filter));
     }
   });
-
-  console.log(filter);
 
   const search = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -87,75 +82,104 @@ const SearchResults = () => {
         query: { value: newQuery },
       },
     } = event;
+    let queryString = "";
 
-    if (newQuery.length > 0) {
-      if (
-        type === "tags" &&
-        refinedTags["All collections"].includes(newQuery)
-      ) {
-        const tagsArray = query.length > 0 ? query.split(",") : [];
-        tagsArray.push(newQuery);
-        dispatch(setFilter({ query: tagsArray.join(","), type: "tags" }));
-
-        queryParams.query = tagsArray.join(",");
-        (document.getElementById("query-input") as HTMLInputElement).value = "";
-      } else if (type === "caption") {
-        dispatch(setFilter({ query: newQuery, type: "caption" }));
-        queryParams.query = newQuery;
-      }
-      const queryCopy = constructParams();
-      if (hideRange) {
-        delete queryCopy["startDate" as keyof typeof queryCopy];
-        delete queryCopy["endDate" as keyof typeof queryCopy];
-      } else {
-        Object.assign(queryCopy, { startDate: startDate, endDate: endDate });
-      }
-      dispatch(resetPhotos());
-      setSearchParams(queryCopy);
+    if (
+      (type === "tags" && refinedTags["All collections"].includes(newQuery)) ||
+      (type === "tags" &&
+        query
+          .split(",")
+          .every((tag) => refinedTags["All collections"].includes(tag)))
+    ) {
+      const tagsArray = query.length > 0 ? query.split(",") : [];
+      newQuery.length > 0 && tagsArray.push(newQuery);
+      dispatch(setFilter({ query: tagsArray.join(","), type: "tags" }));
+      queryString += tagsArray.join(",");
+      (document.getElementById("query-input") as HTMLInputElement).value = "";
+    } else if (type === "caption" && newQuery.length > 0) {
+      dispatch(setFilter({ query: newQuery, type: "caption" }));
+      queryString += newQuery;
     }
-
-    // let searchString = "";
-    // let dateString = "";
-    // if (
-    //   collections.includes(collection) &&
-    //   !collection.includes("All collections")
-    // ) {
-    //   searchString = `&collection=${collection}`;
-    // }
-
-    // if (!hideRange) {
-    //   dateString = `&startDate=${startDate}&endDate=${endDate}`;
-    // }
-
-    // if (query.length > 0) {
-    //   const params = {
-    //     pathname: "/results",
-    //     search: `query=${query}&type=${searchType}${searchString}${dateString}`,
-    //   };
-    //   navigate(params);
-    //   setPhotos(null);
-    // }
+    const newParams = {};
+    Object.assign(newParams, {
+      query: queryString,
+      collection: collection,
+      type: type,
+    });
+    if (!hideRange) {
+      Object.assign(newParams, { startDate: startDate, endDate: endDate });
+    }
+    dispatch(resetPhotos());
+    setSearchParams(newParams);
   };
 
   const removeTag = (buttonTag: string) => {
     const tagsArray = query.split(",");
     const withThatTag = tagsArray.filter((tag) => tag !== buttonTag);
+    const newParams = {};
+    Object.assign(newParams, {
+      query: withThatTag.join(","),
+      collection: collection,
+      type: type,
+    });
+    if (!hideRange) {
+      Object.assign(newParams, { startDate: startDate, endDate: endDate });
+    }
     dispatch(setFilter({ query: withThatTag.join(","), type: "tags" }));
-    queryParams.query = withThatTag.join(",");
-    const queryCopy = constructParams();
-    setSearchParams(queryCopy);
     dispatch(resetPhotos());
+    setSearchParams(newParams);
   };
 
-  //const fetched = photos !== null && photos.length === 0;
-  // console.log(data);
-  // console.log("rendered");
+  const addTag = (buttonTag: string) => {
+    const tagsArray = query.length > 0 ? query.split(",") : [];
+    tagsArray.push(buttonTag);
+    const newParams = {};
+    Object.assign(newParams, {
+      query: tagsArray.join(","),
+      collection: collection,
+      type: type,
+    });
+    if (!hideRange) {
+      Object.assign(newParams, { startDate: startDate, endDate: endDate });
+    }
+    dispatch(setFilter({ query: tagsArray.join(","), type: "tags" }));
+    dispatch(resetPhotos());
+    setSearchParams(newParams);
+    window.scrollTo(0, 0);
+  };
+
+  const concatenateTags = (data: MockFile[]) => {
+    const narrowedTags: string[] = [];
+    data.forEach((photo: MockFile) => {
+      photo.tags.forEach((tag) => {
+        if (!narrowedTags.includes(tag)) {
+          narrowedTags.push(tag);
+        }
+      });
+    });
+    narrowedTags.sort();
+    return narrowedTags;
+  };
+
+  const selectedTags =
+    type === "tags" && query.length > 0 && data !== null
+      ? concatenateTags(data)
+      : refinedTags[collection as keyof typeof refinedTags];
+
+  // const selectedTags = refinedTags[collection as keyof typeof refinedTags];
+  // console.log(selectedTags);
+
+  console.log(data);
 
   return (
     <>
-      {/* <h6 className="mt-3 mb-3"> {searchString}</h6> */}
       <div className="mt-3 mb-3">
-        <SearchBar origin={"results"} search={search} removeTag={removeTag} />
+        <SearchBar
+          selectedTags={selectedTags}
+          origin={"results"}
+          search={search}
+          removeTag={removeTag}
+        />
       </div>
       {loading && <h6> loading results...</h6>}
       {data !== null &&
@@ -173,38 +197,7 @@ const SearchResults = () => {
                     key={photo.photoId + tag + String(Math.random())}
                     style={{ margin: "3px 3px 3px 0px" }}
                     onClick={() => {
-                      const tagsArray =
-                        query.length > 0 ? query.split(",") : [];
-                      tagsArray.push(tag);
-                      dispatch(
-                        setFilter({ query: tagsArray.join(","), type: "tags" })
-                      );
-                      queryParams.query = tagsArray.join(",");
-                      const queryCopy = constructParams();
-                      setSearchParams(queryCopy);
-                      dispatch(resetPhotos());
-                      window.scrollTo(0, 0);
-
-                      // const queryCopy = { ...queryParams };
-                      // Object.keys(queryCopy).forEach((key) => {
-                      //   const value = queryCopy[key as keyof QueryParams];
-                      //   if (value === null) {
-                      //     delete queryCopy[key as keyof QueryParams];
-                      //   }
-                      // });
-
-                      // queryCopy.query = tag;
-                      // queryCopy.type = "tags";
-                      // const withOutNulls = queryCopy as SearchParams;
-                      // (
-                      //   document.getElementById(
-                      //     "query-input"
-                      //   )! as HTMLInputElement
-                      // ).value = tag;
-                      // setSearchString(tag);
-                      // setSearchType("tags");
-                      //setPhotos(null);
-                      //setSearchParams(withOutNulls);
+                      addTag(tag);
                     }}
                   >
                     {tag}

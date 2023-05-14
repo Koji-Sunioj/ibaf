@@ -7,6 +7,7 @@ import Button from "react-bootstrap/Button";
 import { MockFile } from "../utils/types";
 import { useDispatch } from "react-redux";
 import { resetPhotos } from "../redux/slices/photos";
+import { setFilter } from "../redux/slices/filter";
 
 const PhotoPage = () => {
   const dispatch = useDispatch();
@@ -64,6 +65,7 @@ const PhotoPage = () => {
                     pathname: "/results",
                     search: `?collection=${pagePhoto.collection}&type=tags&query=${tag}`,
                   };
+                  dispatch(setFilter({ directRefer: true, hideRange: true }));
                   dispatch(resetPhotos());
                   navigate(params);
                 }}
