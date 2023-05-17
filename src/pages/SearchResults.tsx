@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
@@ -26,7 +26,7 @@ const SearchResults = () => {
     directRefer,
     hideRange,
   } = useSelector((state: TAppState) => state.filter);
-
+  const navigate = useNavigate();
   const filter = useSelector((state: TAppState) => state.filter);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -169,11 +169,6 @@ const SearchResults = () => {
       ? concatenateTags(data)
       : refinedTags[collection as keyof typeof refinedTags];
 
-  // const selectedTags = refinedTags[collection as keyof typeof refinedTags];
-  // console.log(selectedTags);
-
-  console.log(data);
-
   return (
     <>
       <div className="mt-3 mb-3">
@@ -188,7 +183,20 @@ const SearchResults = () => {
       {data !== null &&
         data.map((photo: MockFile) => (
           <Card className="mb-3">
-            <Card.Img variant="bottom" src={photo.file} alt={photo.file} />
+            <Card.Img
+              style={{
+                cursor: "pointer",
+              }}
+              variant="bottom"
+              src={photo.file}
+              alt={photo.file}
+              onClick={() => {
+                const params = {
+                  pathname: `/photo/${photo.photoId}`,
+                };
+                navigate(params);
+              }}
+            />
             <Card.Body>
               <Card.Title>
                 <Link to={`/photo/${photo.photoId}`}>{photo.photoId}</Link>

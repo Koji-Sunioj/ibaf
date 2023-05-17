@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 
 import { useDispatch } from "react-redux";
-import { setFilter } from "../redux/slices/filter";
+import { resetFilter } from "../redux/slices/filter";
 
 import { useNavigate } from "react-router-dom";
 import { resetPhotos } from "../redux/slices/photos";
@@ -26,11 +26,11 @@ const Collections = () => {
 
   for (const key of collections) {
     if (!key.includes("All collections")) {
-      collectionObject[key.trim()] = 0;
+      collectionObject[key] = 0;
       if (photos !== null) {
         photos.forEach((photo: MockFile) => {
-          if (photo.collection.trim() === key.trim()) {
-            collectionObject[key.trim()]++;
+          if (photo.collection === key) {
+            collectionObject[key]++;
           }
         });
       }
@@ -48,7 +48,7 @@ const Collections = () => {
               onClick={(event) => {
                 event?.preventDefault();
                 dispatch(resetPhotos());
-                dispatch(setFilter({ directRefer: true, query: "" }));
+                dispatch(resetFilter());
                 const params = {
                   pathname: "/results",
                   search: `?collection=${key}&type=tags`,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
@@ -7,7 +7,7 @@ import Button from "react-bootstrap/Button";
 import { MockFile } from "../utils/types";
 import { useDispatch } from "react-redux";
 import { resetPhotos } from "../redux/slices/photos";
-import { setFilter } from "../redux/slices/filter";
+import { resetFilter } from "../redux/slices/filter";
 
 const PhotoPage = () => {
   const dispatch = useDispatch();
@@ -45,7 +45,21 @@ const PhotoPage = () => {
               </p>
               <p>
                 <strong>collection: </strong>
-                {pagePhoto.collection}
+                <Link
+                  to={`/results?collection=${pagePhoto.collection}&type=tags`}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    const params = {
+                      pathname: "/results",
+                      search: `?collection=${pagePhoto.collection}&type=tags`,
+                    };
+                    dispatch(resetFilter());
+                    dispatch(resetPhotos());
+                    navigate(params);
+                  }}
+                >
+                  {pagePhoto.collection}
+                </Link>
               </p>
               <p>
                 <strong>date: </strong>
@@ -65,7 +79,7 @@ const PhotoPage = () => {
                     pathname: "/results",
                     search: `?collection=${pagePhoto.collection}&type=tags&query=${tag}`,
                   };
-                  dispatch(setFilter({ directRefer: true, hideRange: true }));
+                  dispatch(resetFilter());
                   dispatch(resetPhotos());
                   navigate(params);
                 }}

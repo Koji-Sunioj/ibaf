@@ -32,6 +32,8 @@ const SearchBar = ({
     dispatch(setFilter({ collection: value }));
   };
 
+  console.log(selectedTags);
+
   return (
     <Form onSubmit={search}>
       <Row>
