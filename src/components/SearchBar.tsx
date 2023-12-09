@@ -18,7 +18,7 @@ const SearchBar = ({
 }: TSearchBarProps) => {
   const dispatch = useDispatch();
   const display = origin === "home" ? { span: 8, offset: 2 } : { span: 8 };
-  const { type, query, collection, hideRange, endDate, startDate } =
+  const { caption, tags, collection, hideRange, endDate, startDate } =
     useSelector((state: TAppState) => state.filter);
 
   const mutateParams = (newParams: { [index: string]: string | boolean }) => {
@@ -26,38 +26,62 @@ const SearchBar = ({
   };
 
   const changeCollection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    e.stopPropagation();
     const {
       currentTarget: { value },
     } = e;
     dispatch(setFilter({ collection: value }));
   };
 
-  console.log(selectedTags);
+  const something = (e: any) => {
+    console.log(e);
+  };
+
+  const addOption = (e: any) => {
+    const {
+      key,
+      target: { value },
+      type,
+    } = e;
+
+    if (type === "keyup" && key === "Enter") {
+      if (selectedTags.includes(value)) {
+        const something = tags.length > 0 ? tags.split(",") : [];
+        something.push(value);
+        dispatch(setFilter({ tags: something.join(",") }));
+        (document.getElementById("tags-input") as HTMLInputElement).value = "";
+      }
+    } else if (type === "click") {
+      const theValue = (
+        document.getElementById("tags-input") as HTMLInputElement
+      ).value;
+
+      if (selectedTags.includes(theValue)) {
+        const something = tags.length > 0 ? tags.split(",") : [];
+        something.push(theValue);
+        dispatch(setFilter({ tags: something.join(",") }));
+        (document.getElementById("tags-input") as HTMLInputElement).value = "";
+      }
+    }
+
+    /*  const {
+      target: { value },
+    } = e;
+    console.log(value); */
+    /*  if (value.length > 0) {
+      const something = query.length > 0 ? query.split(",") : [];
+      something.push(value);
+      dispatch(setFilter({ query: something.join(",") }));
+      (document.getElementById("query-input") as HTMLInputElement).value = "";
+    } */
+  };
 
   return (
-    <Form onSubmit={search}>
+    /*  <Form onSubmit={search}> */
+    <>
       <Row>
-        <Col lg={display}>
+        <Col lg={{ span: 3, offset: 1 }}>
           <InputGroup className="mb-3" hasValidation={false}>
-            <Button variant="primary" type="submit">
-              Search
-            </Button>
-            <Form.Control
-              placeholder={`via ${type}`}
-              name="query"
-              id="query-input"
-              list="tags"
-              defaultValue={type === "tags" ? "" : query}
-            />
-            {type === "tags" && (
-              <>
-                <datalist id="tags">
-                  {selectedTags.map((tag) => (
-                    <option key={tag} value={tag} />
-                  ))}
-                </datalist>
-              </>
-            )}
             <Form.Select
               name="collection"
               value={collection}
@@ -70,10 +94,62 @@ const SearchBar = ({
               ))}
             </Form.Select>
           </InputGroup>
-          {type === "tags" && query.length > 0 && (
+        </Col>
+        <Col lg={3}>
+          <InputGroup className="mb-3" hasValidation={false}>
+            <Form.Control
+              placeholder={"tags"}
+              name="tags"
+              id="tags-input"
+              list="tags"
+              onKeyUp={addOption}
+            />
+
+            <>
+              <datalist id="tags">
+                {selectedTags.map((tag) => (
+                  <option key={tag} value={tag} />
+                ))}
+              </datalist>
+            </>
+
+            <Button
+              onClick={addOption}
+              variant="light"
+              type="submit"
+              style={{ border: "1px solid #ced4da" }}
+            >
+              &#x1F50E;
+            </Button>
+          </InputGroup>
+        </Col>
+        <Col lg={3}>
+          <InputGroup className="mb-3" hasValidation={false}>
+            <Form.Control
+              placeholder="caption"
+              name="query"
+              id="query-input"
+              type="text"
+              onChange={(e: any) => {
+                dispatch(setFilter({ caption: e.target.value }));
+              }}
+            />
+          </InputGroup>
+        </Col>
+      </Row>
+      <Row className="mb-3">
+        <Col lg={{ span: 11, offset: 1 }}>
+          <Button onClick={search}>Submit search parameters</Button>
+        </Col>
+      </Row>
+      <Row>
+        <Col lg={{ span: 10, offset: 1 }}>
+          {tags.length > 0 && (
             <div className="mb-3">
-              {query.split(",").map((tag) => (
+              <p>Tags: </p>
+              {tags.split(",").map((tag) => (
                 <Button
+                  key={tag}
                   size="sm"
                   style={{ margin: "3px 3px 3px 0px" }}
                   onClick={() => {
@@ -88,37 +164,7 @@ const SearchBar = ({
         </Col>
       </Row>
       <Row style={{ marginBottom: "10px" }}>
-        <Col lg={display}>
-          <h3>Search by</h3>
-          <div key={`inline radio`} className="mb-3">
-            <Form.Check
-              label="tags"
-              name="searchRadio"
-              type={"radio"}
-              id={`inline-${"radio"}-1`}
-              checked={type === "tags"}
-              onChange={() => {
-                mutateParams({ type: "tags" });
-                (
-                  document.getElementById("query-input") as HTMLInputElement
-                ).value = "";
-              }}
-            />
-            <Form.Check
-              label="caption"
-              name="searchRadio"
-              type={"radio"}
-              id={`inline-${"radio"}-2`}
-              checked={type === "caption"}
-              onChange={() => {
-                mutateParams({ type: "caption" });
-                (
-                  document.getElementById("query-input") as HTMLInputElement
-                ).value = query;
-              }}
-            />
-          </div>
-
+        <Col lg={{ span: 3, offset: 1 }}>
           <Form.Check
             checked={!hideRange}
             type={"switch"}
@@ -130,8 +176,12 @@ const SearchBar = ({
           />
         </Col>
       </Row>
+
       <Row>
-        <Col lg={display} style={{ display: hideRange ? "none" : "block" }}>
+        <Col
+          lg={{ span: 10, offset: 1 }}
+          style={{ display: hideRange ? "none" : "block" }}
+        >
           <Form.Label>Less than {endDate}</Form.Label>
           <Form.Range
             name="endDate"
@@ -147,8 +197,12 @@ const SearchBar = ({
           />
         </Col>
       </Row>
+
       <Row>
-        <Col lg={display} style={{ display: hideRange ? "none" : "block" }}>
+        <Col
+          lg={{ span: 10, offset: 1 }}
+          style={{ display: hideRange ? "none" : "block" }}
+        >
           <Form.Label>Greater than {startDate}</Form.Label>
           <Form.Range
             name="startDate"
@@ -164,8 +218,34 @@ const SearchBar = ({
           />
         </Col>
       </Row>
-    </Form>
+    </>
+    /* </Form> */
   );
 };
 
 export default SearchBar;
+
+{
+  /*   <Form.Control
+              placeholder={`via ${type}`}
+              name="query"
+              id="query-input"
+              list="tags"
+              defaultValue={type === "tags" ? "" : query}
+              onChange={addOption}
+            />
+            {type === "tags" && (
+              <>
+                <datalist id="tags">
+                  {selectedTags.map((tag) => (
+                    <option key={tag} value={tag} />
+                  ))}
+                </datalist>
+              </>
+            )} */
+}
+{
+  /*   <Button variant="primary" type="submit">
+              Search
+            </Button> */
+}

@@ -12,24 +12,29 @@ export const fetchPhotos = createAsyncThunk(
       throw new Error(message);
     }
     let filtered;
-    const { collection, query, startDate, endDate, hideRange, type } = filter;
+    const { collection, caption, startDate, endDate, hideRange, tags } = filter;
 
-    if (type === "caption") {
-      filtered =
-        query.length > 0
-          ? response.filter((photo: MockFile) =>
-              photo.caption.toLowerCase().includes(query!.toLowerCase())
-            )
-          : response;
-    } else if (type === "tags") {
-      const tagsArr = query.split(",");
-      filtered =
-        query.length > 0
-          ? response.filter((photo: MockFile) =>
-              tagsArr?.every((tag: string) => photo.tags.includes(tag))
-            )
-          : response;
-    }
+    /*   if (type === "caption") { */
+    filtered =
+      caption.length > 0
+        ? response.filter((photo: MockFile) =>
+            photo.caption.toLowerCase().includes(caption!.toLowerCase())
+          )
+        : response;
+    /* } */
+
+    console.log(filtered);
+
+    /*   else if (type === "tags") { */
+    const tagsArr = tags.split(",");
+    console.log(tagsArr);
+    filtered =
+      tagsArr.length > 0
+        ? filtered.filter((photo: MockFile) =>
+            tagsArr?.every((tag: string) => photo.tags.includes(tag))
+          )
+        : filtered;
+    /* } */
 
     if (!collection.includes("All collections"))
       filtered = filtered.filter(

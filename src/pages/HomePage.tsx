@@ -12,20 +12,29 @@ import { resetPhotos } from "../redux/slices/photos";
 
 const HomePage = () => {
   const { data } = useSelector((state: TAppState) => state.photos);
-  const { type, query, collection, hideRange, endDate, startDate } =
+  const { caption, tags, collection, hideRange, endDate, startDate } =
     useSelector((state: TAppState) => state.filter);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const search = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const search = (event: any) => {
+    let searchString = `?collection=${collection}`;
+    searchString =
+      caption.length > 0 ? searchString + `&caption=${caption}` : searchString;
+    searchString =
+      tags.length > 0 ? searchString + `&tags=${tags}` : searchString;
+    const params = {
+      pathname: "/results",
+      search: searchString,
+    };
+    navigate(params);
+    /* event.preventDefault();
     const {
       currentTarget: {
         query: { value: query },
       },
-    } = event;
-
-    if (query.length > 0) {
+    } = event; */
+    /* if (query.length > 0) {
       dispatch(setFilter({ query: query, directRefer: false }));
       data !== null && dispatch(resetPhotos());
       const dateString = !hideRange
@@ -36,13 +45,13 @@ const HomePage = () => {
         search: `?collection=${collection}&type=${type}&query=${query}${dateString}`,
       };
       navigate(params);
-    }
+    } */
   };
 
   const removeTag = (buttonTag: string) => {
-    const tagsArray = query.split(",");
+    const tagsArray = tags.split(",");
     const withThatTag = tagsArray.filter((tag) => tag !== buttonTag);
-    dispatch(setFilter({ query: withThatTag.join(","), type: "tags" }));
+    dispatch(setFilter({ tags: withThatTag.join(",") }));
   };
 
   const selectedTags = refinedTags[collection as keyof typeof refinedTags];

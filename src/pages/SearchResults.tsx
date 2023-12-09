@@ -19,8 +19,8 @@ const SearchResults = () => {
   const { data, loading } = useSelector((state: TAppState) => state.photos);
   const {
     collection,
-    type,
-    query,
+    caption,
+    tags,
     startDate,
     endDate,
     directRefer,
@@ -32,8 +32,8 @@ const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const queryParams: Omit<TFilterState, "hideRange" | "directRefer"> = {
-    query: searchParams.get("query") || query,
-    type: searchParams.get("type") || type,
+    caption: searchParams.get("caption") || caption,
+    tags: searchParams.get("tags") || tags,
     collection: searchParams.get("collection") || collection,
     startDate: searchParams.get("startDate") || startDate,
     endDate: searchParams.get("endDate") || endDate,
@@ -43,7 +43,6 @@ const SearchResults = () => {
     const queryCopy = {};
     Object.assign(queryCopy, {
       collection: queryParams.collection,
-      type: queryParams.type,
     });
     const hasDates =
       searchParams.get("startDate") !== null &&
@@ -54,9 +53,14 @@ const SearchResults = () => {
         endDate: queryParams.endDate,
       });
     }
-    if (queryParams.query.length > 0) {
+    if (queryParams.caption.length > 0) {
       Object.assign(queryCopy, {
-        query: queryParams.query,
+        caption: queryParams.caption,
+      });
+    }
+    if (queryParams.tags.length > 0) {
+      Object.assign(queryCopy, {
+        tags: queryParams.tags,
       });
     }
     return queryCopy;
@@ -64,12 +68,14 @@ const SearchResults = () => {
 
   useEffect(() => {
     if (directRefer) {
+      console.log("direct");
       const queryCopy = constructParams();
       setSearchParams(queryCopy);
       const hasDates = queryCopy.hasOwnProperty("startDate");
       hasDates && Object.assign(queryCopy, { hideRange: false });
       dispatch(setFilter({ ...queryCopy, directRefer: false }));
     } else {
+      console.log("fetching");
       const shouldFetch = data === null && !loading;
       shouldFetch && dispatch(fetchPhotos(filter));
     }
@@ -84,7 +90,7 @@ const SearchResults = () => {
     } = event;
     let queryString = "";
 
-    if (
+    /* if (
       (type === "tags" && refinedTags["All collections"].includes(newQuery)) ||
       (type === "tags" &&
         query
@@ -110,10 +116,10 @@ const SearchResults = () => {
       Object.assign(newParams, { startDate: startDate, endDate: endDate });
     }
     dispatch(resetPhotos());
-    setSearchParams(newParams);
+    setSearchParams(newParams); */
   };
 
-  const removeTag = (buttonTag: string) => {
+  /*   const removeTag = (buttonTag: string) => {
     const tagsArray = query.split(",");
     const withThatTag = tagsArray.filter((tag) => tag !== buttonTag);
     const newParams = {};
@@ -128,8 +134,8 @@ const SearchResults = () => {
     dispatch(setFilter({ query: withThatTag.join(","), type: "tags" }));
     dispatch(resetPhotos());
     setSearchParams(newParams);
-  };
-
+  }; */
+  /*
   const addTag = (buttonTag: string) => {
     const tagsArray = query.length > 0 ? query.split(",") : [];
     tagsArray.push(buttonTag);
@@ -167,18 +173,20 @@ const SearchResults = () => {
     data !== null &&
     searchParams.get("collection") === collection
       ? concatenateTags(data)
-      : refinedTags[collection as keyof typeof refinedTags];
+      : refinedTags[collection as keyof typeof refinedTags]; */
+
+  console.log(data);
 
   return (
     <>
-      <div className="mt-3 mb-3">
+      {/* <div className="mt-3 mb-3">
         <SearchBar
           selectedTags={selectedTags}
           origin={"results"}
           search={search}
           removeTag={removeTag}
         />
-      </div>
+      </div> */}
       {loading && <h6> loading results...</h6>}
       {data !== null &&
         data.map((photo: MockFile) => (
@@ -208,7 +216,7 @@ const SearchResults = () => {
                     key={photo.photoId + tag + String(Math.random())}
                     style={{ margin: "3px 3px 3px 0px" }}
                     onClick={() => {
-                      addTag(tag);
+                      /* addTag(tag); */
                     }}
                   >
                     {tag}

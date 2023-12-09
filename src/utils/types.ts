@@ -1,6 +1,6 @@
 export type TFilterState = {
-  type: string;
-  query: string;
+  tags: string;
+  caption: string;
   startDate: string;
   endDate: string;
   collection: string;
@@ -16,7 +16,7 @@ export type TAppState = {
 export type TSearchBarProps = {
   origin: string;
   selectedTags: string[];
-  search: (event: React.FormEvent<HTMLFormElement>) => void;
+  search: any /* (event: React.FormEvent<HTMLFormElement>) => void; */;
   removeTag: (buttonTag: string) => void;
 };
 

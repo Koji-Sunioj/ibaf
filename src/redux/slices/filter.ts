@@ -3,8 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { TFilterState } from "../../utils/types";
 
 export const initialFilterState: TFilterState = {
-  query: "",
-  type: "tags",
+  caption: "",
+  tags: "",
   startDate: "1890",
   endDate: "1938",
   hideRange: true,
