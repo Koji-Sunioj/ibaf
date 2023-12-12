@@ -1,18 +1,16 @@
-import { useEffect } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 
 import SearchBar from "../components/SearchBar";
-import { refinedTags } from "../utils/searchLists";
 
 import { MockFile, TAppState, TFilterState } from "../utils/types";
 import { useSelector, useDispatch } from "react-redux";
 
 import { setFilter } from "../redux/slices/filter";
 
-import { fetchPhotos, resetPhotos, getCount } from "../redux/slices/photos";
+import { fetchPhotos } from "../redux/slices/photos";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 

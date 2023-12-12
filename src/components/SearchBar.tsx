@@ -13,9 +13,10 @@ import { collections } from "../utils/searchLists";
 const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
   const [timer, setTimer] = useState<any>(null);
   const dispatch = useDispatch();
-  const display = origin === "home" ? { span: 8, offset: 2 } : { span: 8 };
-  const { caption, tags, collection, hideRange, endDate, startDate } =
-    useSelector((state: TAppState) => state.filter);
+
+  const { tags, collection, hideRange, endDate, startDate } = useSelector(
+    (state: TAppState) => state.filter
+  );
 
   const removeTag = (buttonTag: string) => {
     const tagsArray = tags.split(",");

@@ -1,13 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import { setFilter } from "../redux/slices/filter";
-
 import { TAppState } from "../utils/types";
 import { AppDispatch } from "../redux/store";
-import { Row, Col } from "react-bootstrap";
+
 import SearchBar from "../components/SearchBar";
-import { fetchPhotos, resetPhotos, getCount } from "../redux/slices/photos";
+import { getCount } from "../redux/slices/photos";
 
 const HomePage = () => {
   const { data, loading, error, count } = useSelector(

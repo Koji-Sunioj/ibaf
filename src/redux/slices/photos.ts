@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { start } from "repl";
 
 import { TPhotosState, TFilterState, MockFile } from "../../utils/types";
 

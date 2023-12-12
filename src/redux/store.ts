@@ -4,7 +4,7 @@ import { isAnyOf } from "@reduxjs/toolkit";
 import { setFilter } from "./slices/filter";
 
 import filterReducer from "./slices/filter";
-import photosReducer, { fetchPhotos, getCount } from "./slices/photos";
+import photosReducer, { getCount } from "./slices/photos";
 import { TAppState } from "../utils/types";
 
 const fetchMiddleWare = createListenerMiddleware();
