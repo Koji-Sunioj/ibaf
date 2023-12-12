@@ -416,7 +416,7 @@ export const refinedTags = {
     "Plaque de verre 10 x 15 cm",
     "R. Savignac 1907",
   ],
-  "Couvent St. Etienne / The Sainte-Anne Collection ": [
+  "Couvent St. Etienne / The Sainte-Anne Collection": [
     "1921",
     "Bethléem",
     "Cédron",
@@ -767,7 +767,7 @@ export const collections = [
   "Couvent St. Etienne / Charles Prickartz",
   "Couvent St. Etienne /  Sainte-Anne",
   "Couvent St. Etienne / Jesuit",
-  "Couvent St. Etienne / The Sainte-Anne Collection ",
+  "Couvent St. Etienne / The Sainte-Anne Collection",
   "Couvent St. Etienne /  Notre-Dame de France",
   "Couvent St. Etienne / Paulus-Haus",
   "Couvent St. Etienne / JOURDAIN COULEURS",

@@ -3,26 +3,24 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
-
+import { useState } from "react";
+import { refinedTags } from "../utils/searchLists";
+import { setFilter, setDate } from "../redux/slices/filter";
 import { useSelector, useDispatch } from "react-redux";
 import { TAppState, TSearchBarProps } from "../utils/types";
 import { collections } from "../utils/searchLists";
 
-import { setFilter } from "../redux/slices/filter";
-
-const SearchBar = ({
-  origin,
-  search,
-  removeTag,
-  selectedTags,
-}: TSearchBarProps) => {
+const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
+  const [timer, setTimer] = useState<any>(null);
   const dispatch = useDispatch();
   const display = origin === "home" ? { span: 8, offset: 2 } : { span: 8 };
   const { caption, tags, collection, hideRange, endDate, startDate } =
     useSelector((state: TAppState) => state.filter);
 
-  const mutateParams = (newParams: { [index: string]: string | boolean }) => {
-    dispatch(setFilter(newParams));
+  const removeTag = (buttonTag: string) => {
+    const tagsArray = tags.split(",");
+    const withThatTag = tagsArray.filter((tag) => tag !== buttonTag);
+    dispatch(setFilter({ tags: withThatTag.join(",") }));
   };
 
   const changeCollection = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -30,11 +28,7 @@ const SearchBar = ({
     const {
       currentTarget: { value },
     } = e;
-    dispatch(setFilter({ collection: value }));
-  };
-
-  const something = (e: any) => {
-    console.log(e);
+    dispatch(setFilter({ collection: value, tags: "" }));
   };
 
   const addOption = (e: any) => {
@@ -63,24 +57,31 @@ const SearchBar = ({
         (document.getElementById("tags-input") as HTMLInputElement).value = "";
       }
     }
+  };
 
-    /*  const {
-      target: { value },
-    } = e;
-    console.log(value); */
-    /*  if (value.length > 0) {
-      const something = query.length > 0 ? query.split(",") : [];
-      something.push(value);
-      dispatch(setFilter({ query: something.join(",") }));
-      (document.getElementById("query-input") as HTMLInputElement).value = "";
-    } */
+  const selectedTags = refinedTags[collection as keyof typeof refinedTags];
+
+  const finalTags =
+    tags.length > 0
+      ? selectedTags.filter((tag) => !tags.split(",").includes(tag))
+      : selectedTags;
+
+  const mutateParams = (
+    newParams: { [index: string]: string | boolean },
+    triggerCount = false
+  ) => {
+    if (triggerCount) {
+      dispatch(setFilter(newParams));
+    } else {
+      dispatch(setDate(newParams));
+    }
   };
 
   return (
-    /*  <Form onSubmit={search}> */
     <>
       <Row>
         <Col lg={{ span: 3, offset: 1 }}>
+          <Form.Label>Choose a collection:</Form.Label>
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Select
               name="collection"
@@ -96,23 +97,20 @@ const SearchBar = ({
           </InputGroup>
         </Col>
         <Col lg={3}>
+          <Form.Label>Select tag(s):</Form.Label>
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Control
-              placeholder={"tags"}
+              placeholder={"Jerusalem, 1893..."}
               name="tags"
               id="tags-input"
               list="tags"
               onKeyUp={addOption}
             />
-
-            <>
-              <datalist id="tags">
-                {selectedTags.map((tag) => (
-                  <option key={tag} value={tag} />
-                ))}
-              </datalist>
-            </>
-
+            <datalist id="tags">
+              {finalTags.map((tag) => (
+                <option key={tag} value={tag} />
+              ))}
+            </datalist>
             <Button
               onClick={addOption}
               variant="light"
@@ -124,6 +122,7 @@ const SearchBar = ({
           </InputGroup>
         </Col>
         <Col lg={3}>
+          <Form.Label>Caption contains:</Form.Label>
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Control
               placeholder="caption"
@@ -139,9 +138,10 @@ const SearchBar = ({
       </Row>
       <Row className="mb-3">
         <Col lg={{ span: 11, offset: 1 }}>
-          <Button onClick={search}>Submit search parameters</Button>
+          <Button onClick={search}>Show results</Button>
         </Col>
       </Row>
+
       <Row>
         <Col lg={{ span: 10, offset: 1 }}>
           {tags.length > 0 && (
@@ -188,10 +188,16 @@ const SearchBar = ({
             min="1890"
             max="1938"
             value={endDate}
+            /* value={endDate} */
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const endRange = e.currentTarget.value;
               if (Number(endRange) > Number(startDate)) {
                 mutateParams({ endDate: endRange });
+                clearTimeout(timer);
+                const newTimer = setTimeout(() => {
+                  mutateParams({ endDate: endRange }, true);
+                }, 500);
+                setTimer(newTimer);
               }
             }}
           />
@@ -209,43 +215,28 @@ const SearchBar = ({
             min="1890"
             max="1938"
             value={startDate}
+            /* value={startDate} */
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const startRange = e.currentTarget.value;
               if (Number(startRange) < Number(endDate)) {
                 mutateParams({ startDate: startRange });
+                clearTimeout(timer);
+                const newTimer = setTimeout(() => {
+                  mutateParams({ startDate: startRange }, true);
+                }, 500);
+                setTimer(newTimer);
               }
             }}
           />
         </Col>
       </Row>
+      <Row>
+        <Col lg={{ span: 11, offset: 1 }}>
+          {`current selection: ${count} photos`}
+        </Col>
+      </Row>
     </>
-    /* </Form> */
   );
 };
 
 export default SearchBar;
-
-{
-  /*   <Form.Control
-              placeholder={`via ${type}`}
-              name="query"
-              id="query-input"
-              list="tags"
-              defaultValue={type === "tags" ? "" : query}
-              onChange={addOption}
-            />
-            {type === "tags" && (
-              <>
-                <datalist id="tags">
-                  {selectedTags.map((tag) => (
-                    <option key={tag} value={tag} />
-                  ))}
-                </datalist>
-              </>
-            )} */
-}
-{
-  /*   <Button variant="primary" type="submit">
-              Search
-            </Button> */
-}

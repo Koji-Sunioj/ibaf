@@ -17,11 +17,15 @@ export const filterSlice = createSlice({
   initialState: initialFilterState,
   reducers: {
     resetFilter: () => initialFilterState,
+    setDate: (state, action) => {
+      console.log(action.payload);
+      return { ...state, ...action.payload };
+    },
     setFilter: (state, action) => {
       return { ...state, ...action.payload };
     },
   },
 });
 
-export const { resetFilter, setFilter } = filterSlice.actions;
+export const { resetFilter, setFilter, setDate } = filterSlice.actions;
 export default filterSlice.reducer;

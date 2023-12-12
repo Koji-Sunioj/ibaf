@@ -4,8 +4,8 @@ export type TFilterState = {
   startDate: string;
   endDate: string;
   collection: string;
-  hideRange: boolean;
-  directRefer: boolean;
+  hideRange?: boolean;
+  directRefer?: boolean;
 };
 
 export type TAppState = {
@@ -14,10 +14,9 @@ export type TAppState = {
 };
 
 export type TSearchBarProps = {
+  count: number;
   origin: string;
-  selectedTags: string[];
-  search: any /* (event: React.FormEvent<HTMLFormElement>) => void; */;
-  removeTag: (buttonTag: string) => void;
+  search: any;
 };
 
 export type TPhotosState = {
@@ -25,6 +24,7 @@ export type TPhotosState = {
   loading: boolean;
   error: boolean;
   message: null | string;
+  count: null | number;
 };
 
 export type MockFile = {
