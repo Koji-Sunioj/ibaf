@@ -84,7 +84,7 @@ const SearchResults = () => {
         />
       </div>
       <Row className="mb-3">
-        <Col lg={{ span: 11, offset: 1 }}>
+        <Col lg={{ span: 10, offset: 1 }}>
           <hr />
           <h2> {loading ? "loading results..." : "Results"}</h2>
         </Col>
@@ -93,7 +93,7 @@ const SearchResults = () => {
       {data !== null &&
         data.slice(0, 10).map((photo: MockFile) => (
           <Row className="mb-3">
-            <Col lg={{ span: 11, offset: 1 }}>
+            <Col lg={{ span: 10, offset: 1 }}>
               <Card
                 className="mb-3"
                 key={photo.photoId + String(Math.random())}
