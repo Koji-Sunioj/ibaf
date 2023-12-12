@@ -8,9 +8,7 @@ import SearchBar from "../components/SearchBar";
 import { getCount } from "../redux/slices/photos";
 
 const HomePage = () => {
-  const { data, loading, error, count } = useSelector(
-    (state: TAppState) => state.photos
-  );
+  const { count } = useSelector((state: TAppState) => state.photos);
   const filter = useSelector((state: TAppState) => state.filter);
   const { caption, tags, collection, hideRange, endDate, startDate } = filter;
 

@@ -20,15 +20,7 @@ const SearchResults = () => {
     (state: TAppState) => state.photos
   );
   const filter = useSelector((state: TAppState) => state.filter);
-  const {
-    collection,
-    caption,
-    tags,
-    startDate,
-    endDate,
-    directRefer,
-    hideRange,
-  } = filter;
+  const { collection, caption, tags, startDate, endDate } = filter;
   const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
