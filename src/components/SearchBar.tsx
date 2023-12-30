@@ -8,7 +8,7 @@ import { refinedTags } from "../utils/searchLists";
 import { setFilter, setDate } from "../redux/slices/filter";
 import { useSelector, useDispatch } from "react-redux";
 import { TAppState, TSearchBarProps } from "../utils/types";
-import { collections } from "../utils/searchLists";
+import { collections, collectionWCount } from "../utils/searchLists";
 
 const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
   const [timer, setTimer] = useState<any>(null);
@@ -81,27 +81,27 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
   return (
     <>
       <Row>
-        <Col lg={{ span: 3, offset: 1 }}>
-          <Form.Label>Choose a collection:</Form.Label>
+        <Col /* lg={{ span: 3, offset: 1 }} */>
+          {/*     <Form.Label>Choose a collection:</Form.Label> */}
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Select
               name="collection"
               value={collection}
               onChange={changeCollection}
             >
-              {collections.map((collection) => (
-                <option value={collection} key={collection}>
-                  {collection}
+              {Array.from(collectionWCount).map((item) => (
+                <option value={item["name"]} key={item["name"]}>
+                  {item["name"] + ` (${item["count"]})`}
                 </option>
               ))}
             </Form.Select>
           </InputGroup>
         </Col>
-        <Col lg={3}>
-          <Form.Label>Select tag(s):</Form.Label>
+        <Col /* lg={3} */>
+          {/* <Form.Label>Select tag(s):</Form.Label> */}
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Control
-              placeholder={"Jerusalem, 1893..."}
+              placeholder={"Add tags"}
               name="tags"
               id="tags-input"
               list="tags"
@@ -122,11 +122,11 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
             </Button>
           </InputGroup>
         </Col>
-        <Col lg={3}>
-          <Form.Label>Caption contains:</Form.Label>
+        <Col /* lg={3} */>
+          {/* <Form.Label>Caption contains:</Form.Label> */}
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Control
-              placeholder="caption"
+              placeholder="Search in captions"
               name="query"
               id="query-input"
               type="text"
@@ -136,35 +136,51 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
             />
           </InputGroup>
         </Col>
+        <Col /* lg={{ span: 3, offset: 1 }} */>
+          {/*  <Form.Label>Date Filter</Form.Label> */}
+          <InputGroup className="mb-3" hasValidation={false}>
+            <Form.Check
+              label={"date filter"}
+              checked={!hideRange}
+              type={"switch"}
+              id={`date-filter`}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                mutateParams({ hideRange: !e.currentTarget.checked });
+              }}
+            />
+          </InputGroup>
+        </Col>
       </Row>
       <Row className="mb-3">
-        <Col lg={{ span: 11, offset: 1 }}>
+        <Col /* lg={{ span: 11, offset: 1 }} */>
           <Button onClick={search}>Show results</Button>
         </Col>
       </Row>
 
       <Row>
-        <Col lg={{ span: 10, offset: 1 }}>
+        <Col /* lg={{ span: 10, offset: 1 }} */>
           {tags.length > 0 && (
             <div className="mb-3">
-              <p>Tags: </p>
-              {tags.split(",").map((tag) => (
-                <Button
-                  key={tag}
-                  size="sm"
-                  style={{ margin: "3px 3px 3px 0px" }}
-                  onClick={() => {
-                    removeTag(tag);
-                  }}
-                >
-                  {tag + " | X"}
-                </Button>
-              ))}
+              <p>
+                Tags:&nbsp;&nbsp;&nbsp;
+                {tags.split(",").map((tag) => (
+                  <Button
+                    key={tag}
+                    size="sm"
+                    style={{ margin: "3px 3px 3px 0px" }}
+                    onClick={() => {
+                      removeTag(tag);
+                    }}
+                  >
+                    {tag + " | X"}
+                  </Button>
+                ))}{" "}
+              </p>
             </div>
           )}
         </Col>
       </Row>
-      <Row style={{ marginBottom: "10px" }}>
+      {/*   <Row style={{ marginBottom: "10px" }}>
         <Col lg={{ span: 3, offset: 1 }}>
           <Form.Check
             checked={!hideRange}
@@ -177,10 +193,10 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
           />
         </Col>
       </Row>
-
+ */}
       <Row>
         <Col
-          lg={{ span: 10, offset: 1 }}
+          /*  lg={{ span: 10, offset: 1 }} */
           style={{ display: hideRange ? "none" : "block" }}
         >
           <Form.Label>Less than {endDate}</Form.Label>
@@ -207,7 +223,7 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
 
       <Row>
         <Col
-          lg={{ span: 10, offset: 1 }}
+          /* lg={{ span: 10, offset: 1 }} */
           style={{ display: hideRange ? "none" : "block" }}
         >
           <Form.Label>Greater than {startDate}</Form.Label>
@@ -232,7 +248,7 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
         </Col>
       </Row>
       <Row>
-        <Col lg={{ span: 11, offset: 1 }}>
+        <Col /*  lg={{ span: 11, offset: 1 }} */>
           {`current selection: ${count} photos`}
         </Col>
       </Row>

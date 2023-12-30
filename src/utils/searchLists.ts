@@ -773,3 +773,16 @@ export const collections = [
   "Couvent St. Etienne / JOURDAIN COULEURS",
   "Couvent St. Etienne / Bethléem coloriée",
 ];
+
+export const collectionWCount = [
+  { name: "All collections", count: 189 },
+  { name: "Couvent St. Etienne", count: 139 },
+  { name: "Couvent St. Etienne / Charles Prickartz", count: 9 },
+  { name: "Couvent St. Etienne /  Sainte-Anne", count: 16 },
+  { name: "Couvent St. Etienne / Jesuit", count: 3 },
+  { name: "Couvent St. Etienne / The Sainte-Anne Collection", count: 2 },
+  { name: "Couvent St. Etienne /  Notre-Dame de France", count: 18 },
+  { name: "Couvent St. Etienne / Paulus-Haus", count: 0 },
+  { name: "Couvent St. Etienne / JOURDAIN COULEURS", count: 1 },
+  { name: "Couvent St. Etienne / Bethléem coloriée", count: 1 },
+];

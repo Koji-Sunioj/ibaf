@@ -71,6 +71,48 @@ const SearchResults = () => {
     dispatch(fetchPhotos(filter));
   };
 
+  const addTag = (buttonTag: string) => {
+    const stringParams = ["tags", "caption", "collection"];
+    type Cunt = {
+      [key: string]: string;
+    };
+
+    const newParams: Cunt = {};
+
+    Object.keys(filter).forEach((key) => {
+      const value = filter[key as keyof typeof filter];
+      if (
+        stringParams.includes(key) &&
+        typeof value === "string" &&
+        value.length > 0
+      ) {
+        newParams[key] = value;
+      }
+    });
+
+    if (!filter.hideRange) {
+      Object.assign(newParams, {
+        startDate: filter.startDate,
+        endDate: filter.endDate,
+      });
+    }
+
+    console.log(filter);
+
+    if (newParams.hasOwnProperty("tags")) {
+      console.log(buttonTag.trim());
+      newParams["tags"] += `,${buttonTag.trim()}`;
+    } else {
+      newParams["tags"] = `${buttonTag.trim()}`;
+    }
+
+    console.log(newParams);
+
+    dispatch(setFilter(newParams));
+
+    search();
+  };
+
   const photoLength = count !== null ? count : 0;
   return (
     <>
@@ -84,16 +126,15 @@ const SearchResults = () => {
         />
       </div>
       <Row className="mb-3">
-        <Col lg={{ span: 10, offset: 1 }}>
+        <Col /* lg={{ span: 10, offset: 1 }} */>
           <hr />
           <h2> {loading ? "loading results..." : "Results"}</h2>
         </Col>
       </Row>
-
-      {data !== null &&
-        data.slice(0, 10).map((photo: MockFile) => (
-          <Row className="mb-3">
-            <Col lg={{ span: 10, offset: 1 }}>
+      <Row className="mb-3">
+        {data !== null &&
+          data.slice(0, 10).map((photo: MockFile) => (
+            <Col /* lg={{ span: 5, offset: 1 }} */ lg={6}>
               <Card
                 className="mb-3"
                 key={photo.photoId + String(Math.random())}
@@ -101,6 +142,7 @@ const SearchResults = () => {
                 <Card.Img
                   style={{
                     cursor: "pointer",
+                    width: "512px",
                   }}
                   variant="bottom"
                   src={photo.file}
@@ -123,7 +165,7 @@ const SearchResults = () => {
                         key={photo.photoId + tag + String(Math.random())}
                         style={{ margin: "3px 3px 3px 0px" }}
                         onClick={() => {
-                          /* addTag(tag); */
+                          addTag(tag);
                         }}
                       >
                         {tag}
@@ -142,8 +184,8 @@ const SearchResults = () => {
                 </Card.Body>
               </Card>{" "}
             </Col>
-          </Row>
-        ))}
+          ))}
+      </Row>
     </>
   );
 };

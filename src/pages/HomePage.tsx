@@ -47,7 +47,7 @@ const HomePage = () => {
         Welcome to the Collection
       </h1>
       <p style={{ textAlign: "center" }}>
-        We have more than photos as of December 2022
+        We have more than 31,000 photos as of December 2022
       </p>
       <div>
         <SearchBar origin={"home"} search={search} count={photoLength} />
