@@ -8,7 +8,7 @@ import { refinedTags } from "../utils/searchLists";
 import { setFilter, setDate } from "../redux/slices/filter";
 import { useSelector, useDispatch } from "react-redux";
 import { TAppState, TSearchBarProps } from "../utils/types";
-import { collections, collectionWCount } from "../utils/searchLists";
+import { collectionWCount } from "../utils/searchLists";
 
 const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
   const [timer, setTimer] = useState<any>(null);
