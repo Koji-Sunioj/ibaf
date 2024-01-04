@@ -11,8 +11,6 @@ import { useDispatch } from "react-redux";
 import { resetPhotos } from "../redux/slices/photos";
 import { resetFilter, setFilter } from "../redux/slices/filter";
 
-import { fetchPhotos } from "../redux/slices/photos";
-
 import { useSelector } from "react-redux";
 import { TAppState } from "../utils/types";
 import { getParams } from "../utils/functions";
