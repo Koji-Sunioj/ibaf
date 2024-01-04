@@ -9,12 +9,19 @@ import Button from "react-bootstrap/Button";
 import { MockFile } from "../utils/types";
 import { useDispatch } from "react-redux";
 import { resetPhotos } from "../redux/slices/photos";
-import { resetFilter } from "../redux/slices/filter";
+import { resetFilter, setFilter } from "../redux/slices/filter";
+
+import { fetchPhotos } from "../redux/slices/photos";
+
+import { useSelector } from "react-redux";
+import { TAppState } from "../utils/types";
+import { getParams } from "../utils/functions";
 
 const PhotoPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<any>();
   const { photoId } = useParams();
   const navigate = useNavigate();
+  const filter = useSelector((state: TAppState) => state.filter);
   const [pagePhoto, setpagePhoto] = useState<MockFile | null>(null);
 
   pagePhoto === null &&
@@ -27,6 +34,63 @@ const PhotoPage = () => {
 
       setpagePhoto(selectedPhoto);
     })();
+
+  const goToResultsWTags = (buttonTag: string) => {
+    let newTags = "";
+
+    const filterCopy = { ...filter };
+
+    if (
+      filterCopy.tags.length > 0 &&
+      !filterCopy.tags.split(",").includes(buttonTag)
+    ) {
+      newTags = filterCopy.tags + `,${buttonTag}`;
+    } else {
+      newTags = buttonTag;
+    }
+
+    filterCopy.tags = newTags;
+
+    console.log(filterCopy);
+
+    const newParams = getParams(filter);
+
+    if (newParams.hasOwnProperty("tags")) {
+      newParams["tags"] += `,${buttonTag}`;
+    } else {
+      newParams["tags"] = `${buttonTag}`;
+    }
+    dispatch(resetPhotos());
+    dispatch(setFilter(filterCopy));
+
+    const { caption, tags, collection, hideRange, endDate, startDate } =
+      filterCopy;
+    let searchString = `?collection=${collection}`;
+    searchString =
+      caption.length > 0 ? searchString + `&caption=${caption}` : searchString;
+    searchString =
+      tags.length > 0 ? searchString + `&tags=${tags}` : searchString;
+    searchString = !hideRange
+      ? searchString + `&startDate=${startDate}&endDate=${endDate}`
+      : searchString;
+
+    const params = {
+      pathname: "/results",
+      search: searchString,
+    };
+    navigate(params);
+  };
+
+  const navigateWCollection = (event: any) => {
+    event.preventDefault();
+    const params = {
+      pathname: "/results",
+      search: `?collection=${pagePhoto!.collection}`,
+    };
+    dispatch(resetFilter());
+    dispatch(resetPhotos());
+    navigate(params);
+  };
 
   return (
     <>
@@ -65,17 +129,8 @@ const PhotoPage = () => {
                   <p>
                     <strong>collection: </strong>
                     <Link
-                      to={`/results?collection=${pagePhoto.collection}&type=tags`}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        const params = {
-                          pathname: "/results",
-                          search: `?collection=${pagePhoto.collection}&type=tags`,
-                        };
-                        dispatch(resetFilter());
-                        dispatch(resetPhotos());
-                        navigate(params);
-                      }}
+                      to={`/results?collection=${pagePhoto.collection}`}
+                      onClick={navigateWCollection}
                     >
                       {pagePhoto.collection}
                     </Link>
@@ -91,16 +146,11 @@ const PhotoPage = () => {
                 </Card.Text>
                 {pagePhoto.tags.map((tag) => (
                   <Button
+                    key={tag}
                     size="sm"
                     style={{ margin: "3px 3px 3px 0px" }}
                     onClick={() => {
-                      const params = {
-                        pathname: "/results",
-                        search: `?tags=${tag}`,
-                      };
-                      /*   dispatch(resetFilter());
-                  dispatch(resetPhotos()); */
-                      navigate(params);
+                      goToResultsWTags(tag);
                     }}
                   >
                     {tag}

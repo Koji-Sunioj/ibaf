@@ -16,6 +16,8 @@ import { fetchPhotos } from "../redux/slices/photos";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
+import { getParams } from "../utils/functions";
+
 const SearchResults = () => {
   const dispatch = useDispatch<any>();
   const { data, loading, count, error } = useSelector(
@@ -26,6 +28,8 @@ const SearchResults = () => {
   const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
+
+  console.log(filter);
 
   useEffect(() => {
     const shouldFetch = data === null && !error && !loading;
@@ -45,57 +49,10 @@ const SearchResults = () => {
     }
   });
 
-  console.log(data);
-
-  /* const shouldFetch = data === null && !error && !loading;
-  shouldFetch &&
-    (() => {
-      const queryParams: Omit<TFilterState, "directRefer" | "count"> = {
-        caption: searchParams.get("query") || caption,
-        tags: searchParams.get("tags") || tags,
-        collection: searchParams.get("collection") || collection,
-        startDate: searchParams.get("startDate") || startDate,
-        endDate: searchParams.get("endDate") || endDate,
-        hideRange:
-          !searchParams.has("endDate") && !searchParams.has("startDate"),
-      };
-      dispatch(setFilter(queryParams));
-      dispatch(fetchPhotos(queryParams));
-    })(); */
-
   const search = () => {
     const newParams = getParams(filter);
     setSearchParams(newParams);
     dispatch(fetchPhotos(filter));
-  };
-
-  const getParams = (filter: TFilterState) => {
-    const stringParams = ["tags", "caption", "collection"];
-    type Cunt = {
-      [key: string]: string;
-    };
-
-    const newParams: Cunt = {};
-
-    Object.keys(filter).forEach((key) => {
-      const value = filter[key as keyof typeof filter];
-      if (
-        stringParams.includes(key) &&
-        typeof value === "string" &&
-        value.length > 0
-      ) {
-        newParams[key] = value;
-      }
-    });
-
-    if (!filter.hideRange) {
-      Object.assign(newParams, {
-        startDate: filter.startDate,
-        endDate: filter.endDate,
-      });
-    }
-
-    return newParams;
   };
 
   const addTag = (buttonTag: string) => {
@@ -117,7 +74,6 @@ const SearchResults = () => {
     const newParams = getParams(filter);
 
     if (newParams.hasOwnProperty("tags")) {
-      console.log(buttonTag.trim());
       newParams["tags"] += `,${buttonTag.trim()}`;
     } else {
       newParams["tags"] = `${buttonTag.trim()}`;
@@ -130,6 +86,7 @@ const SearchResults = () => {
   };
 
   const photoLength = count !== null ? count : 0;
+
   return (
     <>
       <div className="mt-3">

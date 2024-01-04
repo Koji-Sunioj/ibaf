@@ -5,13 +5,15 @@ import { TPhotosState, TFilterState, MockFile } from "../../utils/types";
 export const fetchPhotos = createAsyncThunk(
   "fetch-photos",
   async (filter: TFilterState) => {
-    console.log("fetching");
     const request = await fetch("188.json");
+
     const response = await request.json();
+
     if (!request.ok) {
       const { message } = response;
       throw new Error(message);
     }
+
     let filtered;
     const { collection, caption, startDate, endDate, hideRange, tags } = filter;
 
@@ -21,7 +23,7 @@ export const fetchPhotos = createAsyncThunk(
             photo.caption.toLowerCase().trim().includes(caption!.toLowerCase())
           )
         : response;
-    console.log(filtered.length);
+
     const tagsArr = tags.split(",");
 
     filtered =
@@ -30,7 +32,7 @@ export const fetchPhotos = createAsyncThunk(
             tagsArr?.every((tag: string) => photo.tags.includes(tag))
           )
         : filtered;
-    console.log(filtered.length);
+
     if (!collection.includes("All collections"))
       filtered = filtered.filter(
         (photo: MockFile) => photo.collection.trim() === collection
@@ -41,7 +43,9 @@ export const fetchPhotos = createAsyncThunk(
         (photo: MockFile) => photo.date >= startDate && photo.date <= endDate
       );
     }
+
     console.log(filtered.length);
+
     return filtered;
   }
 );

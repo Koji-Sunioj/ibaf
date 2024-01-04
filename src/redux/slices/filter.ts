@@ -18,7 +18,6 @@ export const filterSlice = createSlice({
   reducers: {
     resetFilter: () => initialFilterState,
     setDate: (state, action) => {
-      console.log(action.payload);
       return { ...state, ...action.payload };
     },
     setFilter: (state, action) => {
