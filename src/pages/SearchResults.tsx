@@ -133,57 +133,60 @@ const SearchResults = () => {
       </Row>
       <Row className="mb-3">
         {data !== null &&
-          data.slice(0, 10).map((photo: MockFile) => (
-            <Col /* lg={{ span: 5, offset: 1 }} */ lg={6}>
-              <Card
-                className="mb-3"
-                key={photo.photoId + String(Math.random())}
-              >
-                <Card.Img
-                  style={{
-                    cursor: "pointer",
-                  }}
-                  variant="bottom"
-                  src={photo.file}
-                  alt={photo.file}
-                  onClick={() => {
-                    const params = {
-                      pathname: `/photo/${photo.photoId}`,
-                    };
-                    navigate(params);
-                  }}
-                />
-                <Card.Body>
-                  <Card.Title>
-                    <Link to={`/photo/${photo.photoId}`}>{photo.photoId}</Link>
-                  </Card.Title>
-                  <Card.Text className="mb-1">{photo.caption}</Card.Text>
-                  <Card.Text className="mb-1">
-                    {photo.tags.map((tag: string) => (
-                      <Button
-                        key={photo.photoId + tag + String(Math.random())}
-                        style={{ margin: "3px 3px 3px 0px" }}
-                        onClick={() => {
-                          addTag(tag);
-                        }}
-                      >
-                        {tag}
-                      </Button>
-                    ))}
-                  </Card.Text>
-                  {photo.date !== null && (
-                    <Card.Text className="text-muted mb-1">
-                      date: {photo.date.substring(0, 4)}
+          data /* .slice(0, 10) */
+            .map((photo: MockFile) => (
+              <Col /* lg={{ span: 5, offset: 1 }} */ lg={6}>
+                <Card
+                  className="mb-3"
+                  key={photo.photoId + String(Math.random())}
+                >
+                  <Card.Img
+                    style={{
+                      cursor: "pointer",
+                    }}
+                    variant="bottom"
+                    src={photo.file}
+                    alt={photo.file}
+                    onClick={() => {
+                      const params = {
+                        pathname: `/photo/${photo.photoId}`,
+                      };
+                      navigate(params);
+                    }}
+                  />
+                  <Card.Body>
+                    <Card.Title>
+                      <Link to={`/photo/${photo.photoId}`}>
+                        {photo.photoId}
+                      </Link>
+                    </Card.Title>
+                    <Card.Text className="mb-1">{photo.caption}</Card.Text>
+                    <Card.Text className="mb-1">
+                      {photo.tags.map((tag: string) => (
+                        <Button
+                          key={photo.photoId + tag + String(Math.random())}
+                          style={{ margin: "3px 3px 3px 0px" }}
+                          onClick={() => {
+                            addTag(tag);
+                          }}
+                        >
+                          {tag}
+                        </Button>
+                      ))}
                     </Card.Text>
-                  )}
+                    {photo.date !== null && (
+                      <Card.Text className="text-muted mb-1">
+                        date: {photo.date.substring(0, 4)}
+                      </Card.Text>
+                    )}
 
-                  <Card.Text className="text-muted  mb-1">
-                    collection: {photo.collection}
-                  </Card.Text>
-                </Card.Body>
-              </Card>{" "}
-            </Col>
-          ))}
+                    <Card.Text className="text-muted  mb-1">
+                      collection: {photo.collection}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>{" "}
+              </Col>
+            ))}
       </Row>
     </>
   );

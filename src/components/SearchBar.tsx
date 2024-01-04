@@ -151,12 +151,6 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
           </InputGroup>
         </Col>
       </Row>
-      <Row className="mb-3">
-        <Col /* lg={{ span: 11, offset: 1 }} */>
-          <Button onClick={search}>Show results</Button>
-        </Col>
-      </Row>
-
       <Row>
         <Col /* lg={{ span: 10, offset: 1 }} */>
           {tags.length > 0 && (
@@ -180,6 +174,12 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
           )}
         </Col>
       </Row>
+      <Row className="mb-3">
+        <Col /* lg={{ span: 11, offset: 1 }} */>
+          <Button onClick={search}>Show results</Button>
+        </Col>
+      </Row>
+
       {/*   <Row style={{ marginBottom: "10px" }}>
         <Col lg={{ span: 3, offset: 1 }}>
           <Form.Check
