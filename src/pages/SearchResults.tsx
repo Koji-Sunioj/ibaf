@@ -10,6 +10,8 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { setFilter } from "../redux/slices/filter";
 
+import { useEffect } from "react";
+
 import { fetchPhotos } from "../redux/slices/photos";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -25,7 +27,27 @@ const SearchResults = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const shouldFetch = data === null && !error && !loading;
+  useEffect(() => {
+    const shouldFetch = data === null && !error && !loading;
+
+    if (shouldFetch) {
+      const queryParams: Omit<TFilterState, "directRefer" | "count"> = {
+        caption: searchParams.get("query") || caption,
+        tags: searchParams.get("tags") || tags,
+        collection: searchParams.get("collection") || collection,
+        startDate: searchParams.get("startDate") || startDate,
+        endDate: searchParams.get("endDate") || endDate,
+        hideRange:
+          !searchParams.has("endDate") && !searchParams.has("startDate"),
+      };
+      dispatch(setFilter(queryParams));
+      dispatch(fetchPhotos(queryParams));
+    }
+  });
+
+  console.log(data);
+
+  /* const shouldFetch = data === null && !error && !loading;
   shouldFetch &&
     (() => {
       const queryParams: Omit<TFilterState, "directRefer" | "count"> = {
@@ -39,39 +61,15 @@ const SearchResults = () => {
       };
       dispatch(setFilter(queryParams));
       dispatch(fetchPhotos(queryParams));
-    })();
+    })(); */
 
   const search = () => {
-    const stringParams = ["tags", "caption", "collection"];
-    type Cunt = {
-      [key: string]: string;
-    };
-
-    const newParams: Cunt = {};
-
-    Object.keys(filter).forEach((key) => {
-      const value = filter[key as keyof typeof filter];
-      if (
-        stringParams.includes(key) &&
-        typeof value === "string" &&
-        value.length > 0
-      ) {
-        newParams[key] = value;
-      }
-    });
-
-    if (!filter.hideRange) {
-      Object.assign(newParams, {
-        startDate: filter.startDate,
-        endDate: filter.endDate,
-      });
-    }
-
+    const newParams = getParams(filter);
     setSearchParams(newParams);
     dispatch(fetchPhotos(filter));
   };
 
-  const addTag = (buttonTag: string) => {
+  const getParams = (filter: TFilterState) => {
     const stringParams = ["tags", "caption", "collection"];
     type Cunt = {
       [key: string]: string;
@@ -97,7 +95,26 @@ const SearchResults = () => {
       });
     }
 
-    console.log(filter);
+    return newParams;
+  };
+
+  const addTag = (buttonTag: string) => {
+    let newTags = "";
+
+    const filterCopy = { ...filter };
+
+    if (
+      filterCopy.tags.length > 0 &&
+      !filterCopy.tags.split(",").includes(buttonTag)
+    ) {
+      newTags = filterCopy.tags + `,${buttonTag}`;
+    } else {
+      newTags = buttonTag;
+    }
+
+    filterCopy.tags = newTags;
+
+    const newParams = getParams(filter);
 
     if (newParams.hasOwnProperty("tags")) {
       console.log(buttonTag.trim());
@@ -106,17 +123,16 @@ const SearchResults = () => {
       newParams["tags"] = `${buttonTag.trim()}`;
     }
 
-    console.log(newParams);
-
+    setSearchParams(newParams);
     dispatch(setFilter(newParams));
-
-    search();
+    dispatch(fetchPhotos(filterCopy));
+    window.scrollTo(0, 0);
   };
 
   const photoLength = count !== null ? count : 0;
   return (
     <>
-      <div className="mt-3 mb-3">
+      <div className="mt-3">
         <SearchBar
           /* selectedTags={selectedTags} */
           count={photoLength}
@@ -125,7 +141,7 @@ const SearchResults = () => {
           /*  removeTag={removeTag} */
         />
       </div>
-      <Row className="mb-3">
+      <Row>
         <Col /* lg={{ span: 10, offset: 1 }} */>
           <hr />
           <h2> {loading ? "loading results..." : "Results"}</h2>
@@ -135,7 +151,10 @@ const SearchResults = () => {
         {data !== null &&
           data /* .slice(0, 10) */
             .map((photo: MockFile) => (
-              <Col /* lg={{ span: 5, offset: 1 }} */ lg={6}>
+              <Col
+                /* lg={{ span: 5, offset: 1 }} */ lg={6}
+                key={photo.photoId + String(Math.random())}
+              >
                 <Card
                   className="mb-3"
                   key={photo.photoId + String(Math.random())}
