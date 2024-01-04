@@ -81,7 +81,7 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
   return (
     <>
       <Row>
-        <Col /* lg={{ span: 3, offset: 1 }} */>
+        <Col /* lg={{ span: 3, offset: 1 }} */ lg={3}>
           {/*     <Form.Label>Choose a collection:</Form.Label> */}
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Select
@@ -97,7 +97,7 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
             </Form.Select>
           </InputGroup>
         </Col>
-        <Col /* lg={3} */>
+        <Col /* lg={3} */ lg={3}>
           {/* <Form.Label>Select tag(s):</Form.Label> */}
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Control
@@ -122,7 +122,7 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
             </Button>
           </InputGroup>
         </Col>
-        <Col /* lg={3} */>
+        <Col /* lg={3} */ lg={3}>
           {/* <Form.Label>Caption contains:</Form.Label> */}
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Control
@@ -136,7 +136,7 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
             />
           </InputGroup>
         </Col>
-        <Col /* lg={{ span: 3, offset: 1 }} */>
+        <Col /* lg={{ span: 3, offset: 1 }} */ lg={3}>
           {/*  <Form.Label>Date Filter</Form.Label> */}
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Check

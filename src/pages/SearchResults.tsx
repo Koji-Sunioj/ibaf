@@ -142,7 +142,6 @@ const SearchResults = () => {
                 <Card.Img
                   style={{
                     cursor: "pointer",
-                    width: "512px",
                   }}
                   variant="bottom"
                   src={photo.file}
