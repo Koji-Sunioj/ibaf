@@ -175,10 +175,7 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
         </Col>
       </Row>
       <Row className="mb-3">
-        <Col
-          id="results-col"
-          /* lg={{ span: 11, offset: 1 }} */
-        >
+        <Col id="results-col" /* lg={{ span: 11, offset: 1 }} */>
           <Button onClick={search}>Show results</Button>
         </Col>
       </Row>
