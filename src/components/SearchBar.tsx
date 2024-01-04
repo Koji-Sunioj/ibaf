@@ -116,9 +116,15 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
               onClick={addOption}
               variant="light"
               type="submit"
-              style={{ border: "1px solid #ced4da" }}
+              style={{
+                textAlign: "center",
+                color: "grey",
+                border: "1px solid #ced4da",
+                fontSize: "35px",
+                lineHeight: "5px",
+              }}
             >
-              &#x1F50E;
+              +
             </Button>
           </InputGroup>
         </Col>

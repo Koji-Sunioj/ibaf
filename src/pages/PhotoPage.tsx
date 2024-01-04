@@ -30,18 +30,23 @@ const PhotoPage = () => {
 
   return (
     <>
-      <button id="back-button">
-        <span
-          style={{ fontSize: "50px", lineHeight: "20px" }}
-          onClick={() => {
-            navigate(-1);
-          }}
-        >
-          &#8592;
-        </span>
-      </button>
       <Row>
-        <Col lg={6}>
+        <Col lg={{ span: 6, offset: 3 }}>
+          <button id="back-button">
+            <span
+              style={{ fontSize: "50px", lineHeight: "20px" }}
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
+              &#8592;
+            </span>
+          </button>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col lg={{ span: 6, offset: 3 }}>
           {pagePhoto !== null && (
             <Card className="mt-3">
               <Card.Img variant="top" src={pagePhoto.file} />
