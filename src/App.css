@@ -16,9 +16,12 @@ body {
   overflow-y: scroll;
 }
 
-
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 991px) {
   .hide-large-text {
     display: none;
+  }
+
+  #results-col {
+    text-align: center;
   }
 }
