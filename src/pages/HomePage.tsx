@@ -6,6 +6,7 @@ import { AppDispatch } from "../redux/store";
 
 import SearchBar from "../components/SearchBar";
 import { setFilter } from "../redux/slices/filter";
+import { getRefinedTags } from "../utils/functions";
 
 const HomePage = () => {
   const { data, loading, error } = useSelector(
@@ -42,6 +43,7 @@ const HomePage = () => {
   };
 
   const photoLength = data === null ? 0 : data.length;
+  const something = data !== null ? getRefinedTags(data, collection, tags) : [];
 
   return (
     <>
@@ -52,7 +54,12 @@ const HomePage = () => {
         We have more than 31,000 photos as of December 2022
       </p>
       <div>
-        <SearchBar origin={"home"} search={search} count={photoLength} />
+        <SearchBar
+          fuckoff={something}
+          origin={"home"}
+          search={search}
+          count={photoLength}
+        />
       </div>
     </>
   );

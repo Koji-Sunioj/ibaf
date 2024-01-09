@@ -17,6 +17,7 @@ export type TSearchBarProps = {
   count: number;
   origin: string;
   search: any;
+  fuckoff: string[];
 };
 
 export type TPhotosState = {

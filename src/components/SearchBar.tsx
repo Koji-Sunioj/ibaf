@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { TAppState, TSearchBarProps } from "../utils/types";
 import { collectionWCount } from "../utils/searchLists";
 
-const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
+const SearchBar = ({ origin, search, count, fuckoff }: TSearchBarProps) => {
   const [timer, setTimer] = useState<any>(null);
   const dispatch = useDispatch();
 
@@ -45,6 +45,8 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
       type,
     } = e;
 
+    const selectedTags = refinedTags[collection as keyof typeof refinedTags];
+
     const mutate = (value: string) => {
       const tagsCopy = tags.length > 0 ? tags.split(",") : [];
       tagsCopy.push(value);
@@ -71,13 +73,6 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
     const withThatTag = tagsArray.filter((tag) => tag !== buttonTag);
     dispatchOrSearch({ tags: withThatTag.join(",") });
   };
-
-  const selectedTags = refinedTags[collection as keyof typeof refinedTags];
-
-  const finalTags =
-    tags.length > 0
-      ? selectedTags.filter((tag) => !tags.split(",").includes(tag))
-      : selectedTags;
 
   const mutateParams = (
     newParams: { [index: string]: string | boolean },
@@ -124,9 +119,10 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
               id="tags-input"
               list="tags"
               onKeyUp={addOption}
+              autoComplete="off"
             />
             <datalist id="tags">
-              {finalTags.map((tag) => (
+              {fuckoff.map((tag) => (
                 <option key={tag} value={tag} />
               ))}
             </datalist>

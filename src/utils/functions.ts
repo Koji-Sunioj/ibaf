@@ -1,4 +1,4 @@
-import { TFilterState } from "./types";
+import { TFilterState, MockFile } from "./types";
 
 export const getParams = (filter: TFilterState) => {
   const stringParams = ["tags", "caption", "collection"];
@@ -27,4 +27,24 @@ export const getParams = (filter: TFilterState) => {
   }
 
   return newParams;
+};
+
+export const getRefinedTags = (
+  data: MockFile[],
+  collection: string,
+  tags: string
+) => {
+  const combined =
+    data.length > 0
+      ? data
+          .map((item) => item.tags)
+          .reduce(function (pre, cur) {
+            return pre.concat(cur);
+          })
+      : [];
+
+  const unique = Array.from(new Set(combined)).sort();
+  return tags.length > 0
+    ? unique.filter((item) => !tags.split(",").includes(item))
+    : unique;
 };

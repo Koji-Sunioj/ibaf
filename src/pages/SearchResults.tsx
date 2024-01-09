@@ -15,7 +15,7 @@ import { useEffect } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
-import { getParams } from "../utils/functions";
+import { getParams, getRefinedTags } from "../utils/functions";
 
 const SearchResults = () => {
   const dispatch = useDispatch<any>();
@@ -68,16 +68,33 @@ const SearchResults = () => {
     window.scrollTo(0, 0);
   };
 
+  /*  const getRefinedTags = (data: MockFile[]) => {
+    const byCollection =
+      collection === "All collections"
+        ? data
+        : data.filter((item) => item.collection === collection);
+
+    const combined = byCollection
+      .map((item) => item.tags)
+      .reduce(function (pre, cur) {
+        return pre.concat(cur);
+      });
+
+    return Array.from(new Set(combined)).sort();
+  };
+ */
   const photoLength = data === null ? 0 : data.length;
-
-  console.log(collection);
-
-  console.log(data);
+  const something = data !== null ? getRefinedTags(data, collection, tags) : [];
 
   return (
     <>
       <div className="mt-3">
-        <SearchBar count={photoLength} origin={"results"} search={search} />
+        <SearchBar
+          fuckoff={something}
+          count={photoLength}
+          origin={"results"}
+          search={search}
+        />
       </div>
       <Row>
         <Col>
