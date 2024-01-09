@@ -9,7 +9,7 @@ import Button from "react-bootstrap/Button";
 import { MockFile } from "../utils/types";
 import { useDispatch } from "react-redux";
 import { resetPhotos } from "../redux/slices/photos";
-import { resetFilter, setFilter } from "../redux/slices/filter";
+import { resetFilter } from "../redux/slices/filter";
 
 import { useSelector } from "react-redux";
 import { TAppState } from "../utils/types";
