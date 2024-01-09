@@ -29,7 +29,6 @@ const PhotoPage = () => {
       const selectedPhoto = data.find((photo: MockFile) =>
         photo.photoId.includes(photoId!)
       );
-
       setpagePhoto(selectedPhoto);
     })();
 
@@ -49,8 +48,6 @@ const PhotoPage = () => {
 
     filterCopy.tags = newTags;
 
-    console.log(filterCopy);
-
     const newParams = getParams(filter);
 
     if (newParams.hasOwnProperty("tags")) {
@@ -58,8 +55,9 @@ const PhotoPage = () => {
     } else {
       newParams["tags"] = `${buttonTag}`;
     }
+
+    dispatch(resetFilter());
     dispatch(resetPhotos());
-    dispatch(setFilter(filterCopy));
 
     const { caption, tags, collection, hideRange, endDate, startDate } =
       filterCopy;

@@ -12,7 +12,6 @@ import { setFilter } from "../redux/slices/filter";
 
 import { useEffect } from "react";
 
-import { fetchPhotos } from "../redux/slices/photos";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
@@ -20,7 +19,7 @@ import { getParams } from "../utils/functions";
 
 const SearchResults = () => {
   const dispatch = useDispatch<any>();
-  const { data, loading, count, error } = useSelector(
+  const { data, loading, error } = useSelector(
     (state: TAppState) => state.photos
   );
   const filter = useSelector((state: TAppState) => state.filter);
@@ -28,8 +27,6 @@ const SearchResults = () => {
   const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
-
-  console.log(filter);
 
   useEffect(() => {
     const shouldFetch = data === null && !error && !loading;
@@ -45,124 +42,102 @@ const SearchResults = () => {
           !searchParams.has("endDate") && !searchParams.has("startDate"),
       };
       dispatch(setFilter(queryParams));
-      dispatch(fetchPhotos(queryParams));
     }
   });
 
-  const search = () => {
-    const newParams = getParams(filter);
+  const search = (newParam: any) => {
+    const filterCopy = { ...filter, ...newParam };
+    const newParams = getParams(filterCopy);
     setSearchParams(newParams);
-    dispatch(fetchPhotos(filter));
+    dispatch(setFilter(filterCopy));
   };
 
   const addTag = (buttonTag: string) => {
     let newTags = "";
-
-    const filterCopy = { ...filter };
-
+    let existingTags = tags;
     if (
-      filterCopy.tags.length > 0 &&
-      !filterCopy.tags.split(",").includes(buttonTag)
+      existingTags.length > 0 &&
+      !existingTags.split(",").includes(buttonTag)
     ) {
-      newTags = filterCopy.tags + `,${buttonTag}`;
+      newTags = existingTags + `,${buttonTag}`;
     } else {
       newTags = buttonTag;
     }
 
-    filterCopy.tags = newTags;
-
-    const newParams = getParams(filter);
-
-    if (newParams.hasOwnProperty("tags")) {
-      newParams["tags"] += `,${buttonTag.trim()}`;
-    } else {
-      newParams["tags"] = `${buttonTag.trim()}`;
-    }
-
-    setSearchParams(newParams);
-    dispatch(setFilter(newParams));
-    dispatch(fetchPhotos(filterCopy));
+    search({ tags: newTags });
     window.scrollTo(0, 0);
   };
 
-  const photoLength = count !== null ? count : 0;
+  const photoLength = data === null ? 0 : data.length;
+
+  console.log(collection);
+
+  console.log(data);
 
   return (
     <>
       <div className="mt-3">
-        <SearchBar
-          /* selectedTags={selectedTags} */
-          count={photoLength}
-          origin={"results"}
-          search={search}
-          /*  removeTag={removeTag} */
-        />
+        <SearchBar count={photoLength} origin={"results"} search={search} />
       </div>
       <Row>
-        <Col /* lg={{ span: 10, offset: 1 }} */>
+        <Col>
           <hr />
           <h2> {loading ? "loading results..." : "Results"}</h2>
         </Col>
       </Row>
       <Row className="mb-3">
         {data !== null &&
-          data /* .slice(0, 10) */
-            .map((photo: MockFile) => (
-              <Col
-                /* lg={{ span: 5, offset: 1 }} */ lg={6}
+          data.map((photo: MockFile) => (
+            <Col lg={6} key={photo.photoId + String(Math.random())}>
+              <Card
+                className="mb-3"
                 key={photo.photoId + String(Math.random())}
               >
-                <Card
-                  className="mb-3"
-                  key={photo.photoId + String(Math.random())}
-                >
-                  <Card.Img
-                    style={{
-                      cursor: "pointer",
-                    }}
-                    variant="bottom"
-                    src={photo.file}
-                    alt={photo.file}
-                    onClick={() => {
-                      const params = {
-                        pathname: `/photo/${photo.photoId}`,
-                      };
-                      navigate(params);
-                    }}
-                  />
-                  <Card.Body>
-                    <Card.Title>
-                      <Link to={`/photo/${photo.photoId}`}>
-                        {photo.photoId}
-                      </Link>
-                    </Card.Title>
-                    <Card.Text className="mb-1">{photo.caption}</Card.Text>
-                    <Card.Text className="mb-1">
-                      {photo.tags.map((tag: string) => (
-                        <Button
-                          key={photo.photoId + tag + String(Math.random())}
-                          style={{ margin: "3px 3px 3px 0px" }}
-                          onClick={() => {
-                            addTag(tag);
-                          }}
-                        >
-                          {tag}
-                        </Button>
-                      ))}
+                <Card.Img
+                  style={{
+                    cursor: "pointer",
+                  }}
+                  variant="bottom"
+                  src={photo.file}
+                  alt={photo.file}
+                  onClick={() => {
+                    const params = {
+                      pathname: `/photo/${photo.photoId}`,
+                    };
+                    navigate(params);
+                  }}
+                />
+                <Card.Body>
+                  <Card.Title>
+                    <Link to={`/photo/${photo.photoId}`}>{photo.photoId}</Link>
+                  </Card.Title>
+                  <Card.Text className="mb-1">{photo.caption}</Card.Text>
+                  <Card.Text className="mb-1">
+                    {photo.tags.map((tag: string) => (
+                      <Button
+                        key={photo.photoId + tag + String(Math.random())}
+                        style={{ margin: "3px 3px 3px 0px" }}
+                        onClick={() => {
+                          addTag(tag);
+                        }}
+                      >
+                        {tag}
+                      </Button>
+                    ))}
+                  </Card.Text>
+                  {photo.date !== null && (
+                    <Card.Text className="text-muted mb-1">
+                      date: {photo.date.substring(0, 4)}
                     </Card.Text>
-                    {photo.date !== null && (
-                      <Card.Text className="text-muted mb-1">
-                        date: {photo.date.substring(0, 4)}
-                      </Card.Text>
-                    )}
+                  )}
 
-                    <Card.Text className="text-muted  mb-1">
-                      collection: {photo.collection}
-                    </Card.Text>
-                  </Card.Body>
-                </Card>{" "}
-              </Col>
-            ))}
+                  <Card.Text className="text-muted  mb-1">
+                    collection: {photo.collection}
+                  </Card.Text>
+                </Card.Body>
+              </Card>{" "}
+            </Col>
+          ))}
       </Row>
     </>
   );

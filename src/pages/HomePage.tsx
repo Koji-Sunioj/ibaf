@@ -5,21 +5,23 @@ import { TAppState } from "../utils/types";
 import { AppDispatch } from "../redux/store";
 
 import SearchBar from "../components/SearchBar";
-import { getCount } from "../redux/slices/photos";
+import { setFilter } from "../redux/slices/filter";
 
 const HomePage = () => {
-  const { count } = useSelector((state: TAppState) => state.photos);
+  const { data, loading, error } = useSelector(
+    (state: TAppState) => state.photos
+  );
   const filter = useSelector((state: TAppState) => state.filter);
   const { caption, tags, collection, hideRange, endDate, startDate } = filter;
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const shouldFetch = count === null;
+  const shouldFetch = data === null && !loading && !error;
 
   shouldFetch &&
     (() => {
-      dispatch(getCount(filter));
+      dispatch(setFilter(filter));
     })();
 
   const search = () => {
@@ -39,7 +41,7 @@ const HomePage = () => {
     navigate(params);
   };
 
-  const photoLength = count !== null ? count : 0;
+  const photoLength = data === null ? 0 : data.length;
 
   return (
     <>

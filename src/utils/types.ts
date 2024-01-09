@@ -24,7 +24,6 @@ export type TPhotosState = {
   loading: boolean;
   error: boolean;
   message: null | string;
-  count: null | number;
 };
 
 export type MockFile = {

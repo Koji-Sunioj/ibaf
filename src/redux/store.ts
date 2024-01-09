@@ -4,7 +4,7 @@ import { isAnyOf } from "@reduxjs/toolkit";
 import { setFilter } from "./slices/filter";
 
 import filterReducer from "./slices/filter";
-import photosReducer, { getCount } from "./slices/photos";
+import photosReducer, { fetchPhotos } from "./slices/photos";
 import { TAppState } from "../utils/types";
 
 const fetchMiddleWare = createListenerMiddleware();
@@ -13,7 +13,9 @@ fetchMiddleWare.startListening({
   matcher: isAnyOf(setFilter),
   effect: (action, state) => {
     const { filter } = state.getState() as TAppState;
-    state.dispatch(getCount(filter));
+    console.log(filter.collection);
+    console.log("dispatch in store");
+    state.dispatch(fetchPhotos(filter));
   },
 });
 

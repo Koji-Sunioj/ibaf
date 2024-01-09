@@ -18,10 +18,15 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
     (state: TAppState) => state.filter
   );
 
-  const removeTag = (buttonTag: string) => {
-    const tagsArray = tags.split(",");
-    const withThatTag = tagsArray.filter((tag) => tag !== buttonTag);
-    dispatch(setFilter({ tags: withThatTag.join(",") }));
+  const dispatchOrSearch = (newObject: any) => {
+    switch (origin) {
+      case "home":
+        dispatch(setFilter(newObject));
+        break;
+      case "results":
+        search(newObject);
+        break;
+    }
   };
 
   const changeCollection = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -29,7 +34,8 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
     const {
       currentTarget: { value },
     } = e;
-    dispatch(setFilter({ collection: value, tags: "" }));
+
+    dispatchOrSearch({ collection: value, tags: "" });
   };
 
   const addOption = (e: any) => {
@@ -39,25 +45,31 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
       type,
     } = e;
 
+    const mutate = (value: string) => {
+      const tagsCopy = tags.length > 0 ? tags.split(",") : [];
+      tagsCopy.push(value);
+      (document.getElementById("tags-input") as HTMLInputElement).value = "";
+      dispatchOrSearch({ tags: tagsCopy.join(",") });
+    };
+
     if (type === "keyup" && key === "Enter") {
       if (selectedTags.includes(value)) {
-        const something = tags.length > 0 ? tags.split(",") : [];
-        something.push(value);
-        dispatch(setFilter({ tags: something.join(",") }));
-        (document.getElementById("tags-input") as HTMLInputElement).value = "";
+        mutate(value);
       }
     } else if (type === "click") {
-      const theValue = (
-        document.getElementById("tags-input") as HTMLInputElement
-      ).value;
+      const value = (document.getElementById("tags-input") as HTMLInputElement)
+        .value;
 
-      if (selectedTags.includes(theValue)) {
-        const something = tags.length > 0 ? tags.split(",") : [];
-        something.push(theValue);
-        dispatch(setFilter({ tags: something.join(",") }));
-        (document.getElementById("tags-input") as HTMLInputElement).value = "";
+      if (selectedTags.includes(value)) {
+        mutate(value);
       }
     }
+  };
+
+  const removeTag = (buttonTag: string) => {
+    const tagsArray = tags.split(",");
+    const withThatTag = tagsArray.filter((tag) => tag !== buttonTag);
+    dispatchOrSearch({ tags: withThatTag.join(",") });
   };
 
   const selectedTags = refinedTags[collection as keyof typeof refinedTags];
@@ -72,17 +84,24 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
     triggerCount = false
   ) => {
     if (triggerCount) {
-      dispatch(setFilter(newParams));
+      dispatchOrSearch(newParams);
     } else {
       dispatch(setDate(newParams));
     }
   };
 
+  const captureCaption = (e: React.ChangeEvent<HTMLInputElement>) => {
+    clearTimeout(timer);
+    const newTimer = setTimeout(() => {
+      dispatchOrSearch({ caption: e.target.value });
+    }, 500);
+    setTimer(newTimer);
+  };
+
   return (
     <>
       <Row>
-        <Col /* lg={{ span: 3, offset: 1 }} */ lg={3}>
-          {/*     <Form.Label>Choose a collection:</Form.Label> */}
+        <Col lg={3}>
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Select
               name="collection"
@@ -97,8 +116,7 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
             </Form.Select>
           </InputGroup>
         </Col>
-        <Col /* lg={3} */ lg={3}>
-          {/* <Form.Label>Select tag(s):</Form.Label> */}
+        <Col lg={3}>
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Control
               placeholder={"Add tags"}
@@ -128,22 +146,18 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
             </Button>
           </InputGroup>
         </Col>
-        <Col /* lg={3} */ lg={3}>
-          {/* <Form.Label>Caption contains:</Form.Label> */}
+        <Col lg={3}>
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Control
               placeholder="Search in captions"
               name="query"
               id="query-input"
               type="text"
-              onChange={(e: any) => {
-                dispatch(setFilter({ caption: e.target.value }));
-              }}
+              onChange={captureCaption}
             />
           </InputGroup>
         </Col>
-        <Col /* lg={{ span: 3, offset: 1 }} */ lg={3}>
-          {/*  <Form.Label>Date Filter</Form.Label> */}
+        <Col lg={3}>
           <InputGroup className="mb-3" hasValidation={false}>
             <Form.Check
               label={"date filter"}
@@ -158,7 +172,7 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
         </Col>
       </Row>
       <Row>
-        <Col /* lg={{ span: 10, offset: 1 }} */>
+        <Col>
           {tags.length > 0 && (
             <div className="mb-3">
               <p>
@@ -180,38 +194,21 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
           )}
         </Col>
       </Row>
-      <Row className="mb-3">
-        <Col id="results-col" /* lg={{ span: 11, offset: 1 }} */>
-          <Button onClick={search}>Show results</Button>
-        </Col>
-      </Row>
-
-      {/*   <Row style={{ marginBottom: "10px" }}>
-        <Col lg={{ span: 3, offset: 1 }}>
-          <Form.Check
-            checked={!hideRange}
-            type={"switch"}
-            id={`date-filter`}
-            label={"date filter"}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              mutateParams({ hideRange: !e.currentTarget.checked });
-            }}
-          />
-        </Col>
-      </Row>
- */}
+      {origin === "home" && (
+        <Row className="mb-3">
+          <Col id="results-col">
+            <Button onClick={search}>Show results</Button>
+          </Col>
+        </Row>
+      )}
       <Row>
-        <Col
-          /*  lg={{ span: 10, offset: 1 }} */
-          style={{ display: hideRange ? "none" : "block" }}
-        >
+        <Col style={{ display: hideRange ? "none" : "block" }}>
           <Form.Label>Less than {endDate}</Form.Label>
           <Form.Range
             name="endDate"
             min="1890"
             max="1938"
             value={endDate}
-            /* value={endDate} */
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const endRange = e.currentTarget.value;
               if (Number(endRange) > Number(startDate)) {
@@ -228,17 +225,13 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
       </Row>
 
       <Row>
-        <Col
-          /* lg={{ span: 10, offset: 1 }} */
-          style={{ display: hideRange ? "none" : "block" }}
-        >
+        <Col style={{ display: hideRange ? "none" : "block" }}>
           <Form.Label>Greater than {startDate}</Form.Label>
           <Form.Range
             name="startDate"
             min="1890"
             max="1938"
             value={startDate}
-            /* value={startDate} */
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const startRange = e.currentTarget.value;
               if (Number(startRange) < Number(endDate)) {
@@ -254,9 +247,7 @@ const SearchBar = ({ origin, search, count }: TSearchBarProps) => {
         </Col>
       </Row>
       <Row>
-        <Col /*  lg={{ span: 11, offset: 1 }} */>
-          {`current selection: ${count} photos`}
-        </Col>
+        <Col>{`current selection: ${count} photos`}</Col>
       </Row>
     </>
   );
