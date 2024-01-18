@@ -90,7 +90,7 @@ const SearchResults = () => {
     <>
       <div className="mt-3">
         <SearchBar
-          fuckoff={something}
+          selectTags={something}
           count={photoLength}
           origin={"results"}
           search={search}

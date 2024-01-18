@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { TAppState, TSearchBarProps } from "../utils/types";
 import { collectionWCount } from "../utils/searchLists";
 
-const SearchBar = ({ origin, search, count, fuckoff }: TSearchBarProps) => {
+const SearchBar = ({ origin, search, count, selectTags }: TSearchBarProps) => {
   const [timer, setTimer] = useState<any>(null);
   const dispatch = useDispatch();
 
@@ -122,7 +122,7 @@ const SearchBar = ({ origin, search, count, fuckoff }: TSearchBarProps) => {
               autoComplete="off"
             />
             <datalist id="tags">
-              {fuckoff.map((tag) => (
+              {selectTags.map((tag) => (
                 <option key={tag} value={tag} />
               ))}
             </datalist>

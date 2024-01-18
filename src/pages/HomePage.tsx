@@ -55,7 +55,7 @@ const HomePage = () => {
       </p>
       <div>
         <SearchBar
-          fuckoff={something}
+          selectTags={something}
           origin={"home"}
           search={search}
           count={photoLength}

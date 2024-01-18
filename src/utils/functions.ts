@@ -2,11 +2,11 @@ import { TFilterState, MockFile } from "./types";
 
 export const getParams = (filter: TFilterState) => {
   const stringParams = ["tags", "caption", "collection"];
-  type Cunt = {
+  type Dict = {
     [key: string]: string;
   };
 
-  const newParams: Cunt = {};
+  const newParams: Dict = {};
 
   Object.keys(filter).forEach((key) => {
     const value = filter[key as keyof typeof filter];
